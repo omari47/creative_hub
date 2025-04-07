@@ -1,0 +1,346 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Movie Trailers | Creative Platform{% endblock %}
+
+{% block extra_css %}
+<style>
+    .trailer-section {
+        padding: 3rem 0;
+    }
+    
+    .section-title {
+        margin-bottom: 2rem;
+        position: relative;
+        display: inline-block;
+    }
+    
+    .section-title::after {
+        content: "";
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        width: 60px;
+        height: 3px;
+        background-color: #e50914;
+    }
+    
+    .trailer-card {
+        position: relative;
+        margin-bottom: 2rem;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        transition: transform 0.3s ease;
+    }
+    
+    .trailer-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .trailer-thumbnail {
+        width: 100%;
+        height: 220px;
+        object-fit: cover;
+    }
+    
+    .play-icon {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgba(229, 9, 20, 0.9);
+        color: white;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        z-index: 2;
+        transition: all 0.3s ease;
+    }
+    
+    .trailer-card:hover .play-icon {
+        width: 70px;
+        height: 70px;
+        font-size: 1.8rem;
+    }
+    
+    .trailer-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.8) 100%);
+    }
+    
+    .trailer-details {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        padding: 1rem;
+        color: white;
+    }
+    
+    .trailer-title {
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        font-size: 1.2rem;
+    }
+    
+    .upcoming-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: #e50914;
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 30px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    .release-date {
+        font-size: 0.9rem;
+        color: #ddd;
+    }
+    
+    .trailer-modal .modal-content {
+        background-color: #111;
+        color: white;
+    }
+    
+    .trailer-modal .modal-header {
+        border-bottom-color: #333;
+    }
+    
+    .trailer-modal .modal-title {
+        color: white;
+    }
+    
+    .trailer-modal .btn-close {
+        color: white;
+        background: transparent url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23fff'%3e%3cpath d='M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707a1 1 0 010-1.414z'/%3e%3c/svg%3e") center/1em auto no-repeat;
+    }
+    
+    .trailer-empty {
+        min-height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 767.98px) {
+        .trailer-thumbnail {
+            height: 180px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4">Movie Trailers</h1>
+            <p class="lead">
+                Check out trailers for our current and upcoming movies. Get a sneak peek before you purchase!
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="trailer-section">
+    <div class="container">
+        <h2 class="section-title">Current Releases</h2>
+        
+        <div class="row">
+            {% if current_trailers %}
+                {% for trailer in current_trailers %}
+                    <div class="col-md-4">
+                        <div class="trailer-card" data-bs-toggle="modal" data-bs-target="#trailerModal{{ trailer.id }}">
+                            <img src="{{ trailer.thumbnail.url }}" alt="{{ trailer.title }}" class="trailer-thumbnail">
+                            <div class="trailer-overlay"></div>
+                            <div class="play-icon">
+                                <i class="fas fa-play"></i>
+                            </div>
+                            <div class="trailer-details">
+                                <h3 class="trailer-title">{{ trailer.title }}</h3>
+                                <div class="release-date">
+                                    <i class="fas fa-calendar-alt me-1"></i> Released
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Trailer Modal -->
+                        <div class="modal fade trailer-modal" id="trailerModal{{ trailer.id }}" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-lg modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">{{ trailer.title }}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body p-0">
+                                        <div class="ratio ratio-16x9">
+                                            {% if 'youtube.com' in trailer.trailer_url or 'youtu.be' in trailer.trailer_url %}
+                                                <iframe src="{{ trailer.trailer_url }}" 
+                                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                                        allowfullscreen></iframe>
+                                            {% elif 'vimeo.com' in trailer.trailer_url %}
+                                                <iframe src="{{ trailer.trailer_url }}" 
+                                                        allow="autoplay; fullscreen; picture-in-picture" 
+                                                        allowfullscreen></iframe>
+                                            {% else %}
+                                                <video controls>
+                                                    <source src="{{ trailer.trailer_url }}" type="video/mp4">
+                                                    Your browser does not support the video tag.
+                                                </video>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <p class="small mb-0">{{ trailer.description|truncatechars:100 }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12">
+                    <div class="trailer-empty">
+                        <p class="text-muted mb-0">No current trailers available at the moment.</p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="trailer-section bg-light py-5">
+    <div class="container">
+        <h2 class="section-title">Coming Soon</h2>
+        
+        <div class="row">
+            {% if upcoming_trailers %}
+                {% for trailer in upcoming_trailers %}
+                    <div class="col-md-4">
+                        <div class="trailer-card" data-bs-toggle="modal" data-bs-target="#trailerModal{{ trailer.id }}">
+                            <img src="{{ trailer.thumbnail.url }}" alt="{{ trailer.title }}" class="trailer-thumbnail">
+                            <div class="trailer-overlay"></div>
+                            <div class="play-icon">
+                                <i class="fas fa-play"></i>
+                            </div>
+                            <div class="upcoming-badge">
+                                Coming Soon
+                            </div>
+                            <div class="trailer-details">
+                                <h3 class="trailer-title">{{ trailer.title }}</h3>
+                                <div class="release-date">
+                                    <i class="fas fa-calendar-alt me-1"></i> 
+                                    {% if trailer.release_date %}
+                                        {{ trailer.release_date|date:"F j, Y" }}
+                                    {% else %}
+                                        Coming Soon
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Trailer Modal -->
+                        <div class="modal fade trailer-modal" id="trailerModal{{ trailer.id }}" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-lg modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">{{ trailer.title }} (Coming Soon)</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body p-0">
+                                        <div class="ratio ratio-16x9">
+                                            {% if 'youtube.com' in trailer.trailer_url or 'youtu.be' in trailer.trailer_url %}
+                                                <iframe src="{{ trailer.trailer_url }}" 
+                                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                                        allowfullscreen></iframe>
+                                            {% elif 'vimeo.com' in trailer.trailer_url %}
+                                                <iframe src="{{ trailer.trailer_url }}" 
+                                                        allow="autoplay; fullscreen; picture-in-picture" 
+                                                        allowfullscreen></iframe>
+                                            {% else %}
+                                                <video controls>
+                                                    <source src="{{ trailer.trailer_url }}" type="video/mp4">
+                                                    Your browser does not support the video tag.
+                                                </video>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <p class="small mb-0">
+                                            {{ trailer.description|truncatechars:100 }}
+                                            {% if trailer.release_date %}
+                                                <br><strong>Release Date:</strong> {{ trailer.release_date|date:"F j, Y" }}
+                                            {% endif %}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12">
+                    <div class="trailer-empty">
+                        <p class="text-muted mb-0">No upcoming trailers available at the moment.</p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="container my-5 text-center">
+    <a href="{% url 'payments:featured_movies' %}" class="btn btn-primary btn-lg">
+        <i class="fas fa-film me-2"></i> Browse Available Movies
+    </a>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Pause videos when modal is closed
+        var trailerModals = document.querySelectorAll('.trailer-modal');
+        
+        trailerModals.forEach(function(modal) {
+            modal.addEventListener('hidden.bs.modal', function() {
+                // Find iframe or video in this modal
+                var iframe = this.querySelector('iframe');
+                var video = this.querySelector('video');
+                
+                if (iframe) {
+                    // Get the current src
+                    var src = iframe.getAttribute('src');
+                    
+                    // Remove and reset src to stop video
+                    iframe.setAttribute('src', '');
+                    iframe.setAttribute('src', src);
+                }
+                
+                if (video) {
+                    // Pause the video
+                    video.pause();
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,231 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Edit Profile - Creative Platform{% endblock %}
+
+{% block extra_css %}
+<style>
+    .edit-profile-section {
+        padding: 5rem 0;
+        background-color: var(--section-bg);
+    }
+
+    .edit-profile-card {
+        background-color: var(--card-bg);
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        padding: 2.5rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .edit-profile-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .edit-profile-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .edit-profile-subtitle {
+        color: var(--text-color-muted);
+    }
+
+    .avatar-preview {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        overflow: hidden;
+        margin: 0 auto 1.5rem;
+        border: 5px solid rgba(var(--accent-color-rgb), 0.1);
+        position: relative;
+        cursor: pointer;
+    }
+
+    .avatar-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .avatar-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .avatar-preview:hover .avatar-overlay {
+        opacity: 1;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control {
+        background-color: var(--input-bg);
+        border: 1px solid var(--border-color);
+        color: var(--text-color);
+        border-radius: 6px;
+        padding: 12px 15px;
+    }
+
+    .form-control:focus {
+        box-shadow: 0 0 0 0.2rem rgba(var(--accent-color-rgb), 0.25);
+        border-color: var(--accent-color);
+    }
+
+    textarea.form-control {
+        min-height: 120px;
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 2rem;
+    }
+
+    .bg-shape {
+        position: absolute;
+        background: linear-gradient(45deg, var(--accent-color), var(--primary-color));
+        opacity: 0.05;
+        border-radius: 50%;
+    }
+
+    .shape1 {
+        width: 200px;
+        height: 200px;
+        top: -100px;
+        left: -100px;
+    }
+
+    .shape2 {
+        width: 150px;
+        height: 150px;
+        bottom: -75px;
+        right: -75px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="edit-profile-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="edit-profile-card">
+                    <!-- Decorative shapes -->
+                    <div class="bg-shape shape1"></div>
+                    <div class="bg-shape shape2"></div>
+                    
+                    <div class="edit-profile-header">
+                        <h1 class="edit-profile-title">Edit Your Profile</h1>
+                        <p class="edit-profile-subtitle">Update your personal information and preferences</p>
+                    </div>
+                    
+                    <form method="post" action="{% url 'accounts:edit_profile' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="avatar-preview" id="avatarPreview">
+                            {% if form.instance.avatar %}
+                            <img src="{{ form.instance.avatar.url }}" alt="{{ request.user.username }}" id="avatarImage">
+                            {% else %}
+                            <img src="https://ui-avatars.com/api/?name={{ request.user.username }}&background=random&size=150" alt="{{ request.user.username }}" id="avatarImage">
+                            {% endif %}
+                            <div class="avatar-overlay">
+                                <i class="fas fa-camera"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4 text-center">
+                            <label for="id_avatar" class="btn btn-outline-primary">
+                                <i class="fas fa-upload me-2"></i>Change Profile Picture
+                            </label>
+                            <input type="file" id="id_avatar" name="avatar" class="d-none" accept="image/*">
+                            <p class="form-text mt-2">Maximum file size: 2MB. Recommended dimensions: 200x200px or larger.</p>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="id_bio" class="form-label">Biography</label>
+                            {{ form.bio|as_crispy_field }}
+                            <div class="form-text">Tell others about yourself. This will be displayed on your public profile.</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="id_theme" class="form-label">Theme Preference</label>
+                            {{ form.theme|as_crispy_field }}
+                            <div class="form-text">Choose a theme that suits your style. This affects how the platform looks for you.</div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <a href="{% url 'accounts:profile' %}" class="btn btn-outline-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animation for form elements
+        gsap.from('.edit-profile-card', {
+            opacity: 0,
+            y: 30,
+            duration: 0.8,
+            ease: 'power3.out'
+        });
+        
+        // Preview uploaded avatar
+        const avatarInput = document.getElementById('id_avatar');
+        const avatarImage = document.getElementById('avatarImage');
+        
+        avatarInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    avatarImage.src = e.target.result;
+                    
+                    // Animate the avatar change
+                    gsap.from(avatarImage, {
+                        scale: 0.8,
+                        opacity: 0,
+                        duration: 0.5,
+                        ease: 'back.out(1.7)'
+                    });
+                };
+                
+                reader.readAsDataURL(this.files[0]);
+            }
+        });
+        
+        // Click on avatar preview to trigger file input
+        document.getElementById('avatarPreview').addEventListener('click', function() {
+            avatarInput.click();
+        });
+    });
+</script>
+{% endblock %}

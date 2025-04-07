@@ -1,0 +1,294 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Browse Movies | Creative Platform{% endblock %}
+
+{% block extra_css %}
+<style>
+    .browse-header {
+        background-color: #0c111b;
+        padding: 3rem 0;
+        margin-bottom: 2rem;
+        color: white;
+    }
+    
+    .filters-container {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .filter-title {
+        margin-bottom: 1rem;
+        font-weight: 600;
+    }
+    
+    .movie-grid {
+        margin-bottom: 3rem;
+    }
+    
+    .movie-card {
+        margin-bottom: 2rem;
+        transition: transform 0.3s;
+        height: 100%;
+        border: none;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .movie-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    .movie-thumbnail {
+        height: 200px;
+        object-fit: cover;
+    }
+    
+    .card-body {
+        padding: 1.25rem;
+    }
+    
+    .movie-title {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        min-height: 2.5rem;
+    }
+    
+    .movie-price {
+        font-weight: 700;
+        color: #e50914;
+        margin-top: 0.5rem;
+    }
+    
+    .movie-discount {
+        text-decoration: line-through;
+        color: #6c757d;
+        font-size: 0.9rem;
+        margin-left: 0.5rem;
+    }
+    
+    .movie-meta {
+        color: #6c757d;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .movie-meta i {
+        margin-right: 0.25rem;
+    }
+    
+    .category-badge {
+        display: inline-block;
+        padding: 0.25rem 0.5rem;
+        background-color: #f1f1f1;
+        border-radius: 30px;
+        font-size: 0.8rem;
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+        color: #555;
+        transition: all 0.2s;
+    }
+    
+    .category-badge:hover {
+        background-color: #e50914;
+        color: white;
+        text-decoration: none;
+    }
+    
+    .category-badge.active {
+        background-color: #e50914;
+        color: white;
+    }
+    
+    .empty-results {
+        text-align: center;
+        padding: 3rem 0;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        color: #6c757d;
+    }
+    
+    .pagination-container {
+        margin: 2rem 0;
+    }
+    
+    .sort-selector {
+        min-width: 200px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="browse-header">
+    <div class="container">
+        <h1>Browse Movies</h1>
+        <p class="lead">Discover premium content from creative professionals around the world.</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="filters-container">
+                <h5 class="filter-title">Filter By Category</h5>
+                
+                <div class="mb-4">
+                    <a href="{% url 'payments:movie_list' %}" class="category-badge {% if not active_category %}active{% endif %}">
+                        All Categories
+                    </a>
+                    
+                    {% for category in categories %}
+                        <a href="{% url 'payments:movie_list' %}?category={{ category.id }}" 
+                           class="category-badge {% if active_category == category.id|stringformat:'s' %}active{% endif %}">
+                            {{ category.name }}
+                        </a>
+                    {% endfor %}
+                </div>
+                
+                <h5 class="filter-title">Search</h5>
+                <form action="{% url 'payments:movie_list' %}" method="get" class="mb-4">
+                    {% if active_category %}
+                        <input type="hidden" name="category" value="{{ active_category }}">
+                    {% endif %}
+                    {% if sort_by %}
+                        <input type="hidden" name="sort" value="{{ sort_by }}">
+                    {% endif %}
+                    
+                    <div class="input-group">
+                        <input type="text" name="search" value="{{ search_query|default:'' }}" 
+                               class="form-control" placeholder="Search movies...">
+                        <button class="btn btn-primary" type="submit">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </form>
+                
+                <h5 class="filter-title">Sort By</h5>
+                <form action="{% url 'payments:movie_list' %}" method="get" id="sort-form">
+                    {% if active_category %}
+                        <input type="hidden" name="category" value="{{ active_category }}">
+                    {% endif %}
+                    {% if search_query %}
+                        <input type="hidden" name="search" value="{{ search_query }}">
+                    {% endif %}
+                    
+                    <select name="sort" class="form-select sort-selector" id="sort-selector">
+                        <option value="newest" {% if sort_by == 'newest' %}selected{% endif %}>Newest First</option>
+                        <option value="price_low" {% if sort_by == 'price_low' %}selected{% endif %}>Price: Low to High</option>
+                        <option value="price_high" {% if sort_by == 'price_high' %}selected{% endif %}>Price: High to Low</option>
+                        <option value="title" {% if sort_by == 'title' %}selected{% endif %}>Title</option>
+                    </select>
+                </form>
+            </div>
+        </div>
+        
+        <div class="col-md-9">
+            {% if search_query or active_category %}
+                <div class="alert alert-info mb-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>Filtered results:</strong>
+                            {% if search_query %}
+                                Search: "{{ search_query }}"
+                            {% endif %}
+                            
+                            {% if active_category %}
+                                {% for category in categories %}
+                                    {% if active_category == category.id|stringformat:'s' %}
+                                        Category: {{ category.name }}
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                        <a href="{% url 'payments:movie_list' %}" class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-times me-1"></i> Clear Filters
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+            
+            {% if movies %}
+                <div class="row movie-grid">
+                    {% for movie in movies %}
+                        <div class="col-md-4">
+                            <div class="card movie-card">
+                                <img src="{{ movie.thumbnail.url }}" alt="{{ movie.title }}" class="movie-thumbnail">
+                                
+                                <div class="card-body">
+                                    <h5 class="movie-title">{{ movie.title }}</h5>
+                                    
+                                    <div class="movie-meta">
+                                        <span class="me-2"><i class="fas fa-calendar-alt"></i> {{ movie.release_year }}</span>
+                                        <span><i class="fas fa-clock"></i> {{ movie.duration_minutes }} min</span>
+                                    </div>
+                                    
+                                    <div class="movie-categories">
+                                        {% for category in movie.categories.all|slice:":2" %}
+                                            <a href="{% url 'payments:category_movies' category.slug %}" class="category-badge">
+                                                {{ category.name }}
+                                            </a>
+                                        {% endfor %}
+                                        {% if movie.categories.count > 2 %}
+                                            <span class="category-badge">+{{ movie.categories.count|add:"-2" }}</span>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="movie-price">
+                                        {% if movie.discount_price %}
+                                            ${{ movie.discount_price }}
+                                            <span class="movie-discount">${{ movie.price }}</span>
+                                        {% else %}
+                                            ${{ movie.price }}
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="mt-3">
+                                        <a href="{% url 'payments:movie_detail' movie.pk %}" class="btn btn-primary w-100">
+                                            View Details
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                
+                {# Pagination would go here #}
+                
+            {% else %}
+                <div class="empty-results">
+                    <i class="fas fa-film fa-3x mb-3"></i>
+                    <h3>No movies found</h3>
+                    <p>
+                        We couldn't find any movies matching your filters.
+                        Try adjusting your search criteria or browse all movies.
+                    </p>
+                    <a href="{% url 'payments:movie_list' %}" class="btn btn-primary">
+                        View All Movies
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Auto-submit when sort selector changes
+        var sortSelector = document.getElementById('sort-selector');
+        var sortForm = document.getElementById('sort-form');
+        
+        if (sortSelector && sortForm) {
+            sortSelector.addEventListener('change', function() {
+                sortForm.submit();
+            });
+        }
+    });
+</script>
+{% endblock %}

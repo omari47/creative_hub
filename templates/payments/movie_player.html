@@ -1,0 +1,234 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Watch: {{ movie.title }} | Creative Platform{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background-color: #000;
+    }
+    
+    .video-container {
+        position: relative;
+        padding-bottom: 56.25%; /* 16:9 aspect ratio */
+        height: 0;
+        overflow: hidden;
+        max-width: 100%;
+    }
+    
+    .video-container iframe,
+    .video-container video {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+    
+    .movie-title {
+        color: white;
+        margin: 1rem 0;
+    }
+    
+    .movie-details {
+        color: #aaa;
+        margin-bottom: 2rem;
+    }
+    
+    .movie-controls {
+        margin: 1rem 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    
+    .control-button {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        margin-right: 0.5rem;
+        transition: background-color 0.2s;
+    }
+    
+    .control-button:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+    }
+    
+    .content-warning {
+        background-color: rgba(0, 0, 0, 0.7);
+        color: #fff;
+        padding: 1rem;
+        border-radius: 4px;
+        margin-bottom: 1rem;
+    }
+    
+    .back-button {
+        margin-top: 1rem;
+    }
+    
+    /* Custom video player styling */
+    .custom-video-player {
+        --video-progress-color: #e50914;
+        --video-button-color: #e50914;
+    }
+    
+    .custom-video-player video:focus {
+        outline: none;
+    }
+    
+    /* Dark navbar for video page */
+    .navbar {
+        background-color: rgba(0, 0, 0, 0.9) !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <div class="content-warning text-center">
+        <i class="fas fa-exclamation-triangle"></i> 
+        Remember this content is for personal viewing only. Unauthorized redistribution is prohibited.
+    </div>
+    
+    <div class="video-container custom-video-player">
+        {% if movie.video_file %}
+            <video controls autoplay>
+                <source src="{{ movie.video_file.url }}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        {% elif movie.video_url %}
+            {% if 'youtube.com' in movie.video_url or 'youtu.be' in movie.video_url %}
+                <iframe src="{{ movie.video_url|safe }}" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen></iframe>
+            {% elif 'vimeo.com' in movie.video_url %}
+                <iframe src="{{ movie.video_url|safe }}" 
+                        allow="autoplay; fullscreen; picture-in-picture" 
+                        allowfullscreen></iframe>
+            {% else %}
+                <video controls autoplay>
+                    <source src="{{ movie.video_url }}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            {% endif %}
+        {% else %}
+            <div class="alert alert-danger">
+                Video content is not available. Please contact support.
+            </div>
+        {% endif %}
+    </div>
+    
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-8">
+                <h1 class="movie-title">{{ movie.title }}</h1>
+                
+                <div class="movie-details">
+                    <span class="me-3"><i class="fas fa-calendar-alt me-1"></i> {{ movie.release_year }}</span>
+                    <span class="me-3"><i class="fas fa-clock me-1"></i> {{ movie.duration_minutes }} minutes</span>
+                    {% if movie.rating %}
+                    <span class="me-3"><i class="fas fa-star me-1"></i> {{ movie.rating }}/10</span>
+                    {% endif %}
+                    {% if movie.language %}
+                    <span><i class="fas fa-language me-1"></i> {{ movie.language }}</span>
+                    {% endif %}
+                </div>
+                
+                <div class="movie-controls">
+                    <div>
+                        <button class="control-button" onclick="window.history.back()">
+                            <i class="fas fa-arrow-left"></i> Back
+                        </button>
+                        <button class="control-button" onclick="window.location.reload()">
+                            <i class="fas fa-sync"></i> Reload
+                        </button>
+                    </div>
+                    
+                    <div class="text-end">
+                        <a href="{% url 'accounts:profile' %}" class="control-button">
+                            <i class="fas fa-user"></i> My Library
+                        </a>
+                    </div>
+                </div>
+                
+                <p class="text-light">{{ movie.description }}</p>
+                
+                {% if movie.director or movie.cast %}
+                <div class="mt-4">
+                    {% if movie.director %}
+                    <p class="text-light"><strong>Director:</strong> {{ movie.director }}</p>
+                    {% endif %}
+                    
+                    {% if movie.cast %}
+                    <p class="text-light"><strong>Cast:</strong> {{ movie.cast }}</p>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card bg-dark text-light">
+                    <div class="card-header">
+                        <h5 class="mb-0">Your Purchase</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Purchased on:</strong> <span id="purchase-date">Recent</span></p>
+                        <p><strong>Price:</strong> ${{ movie.price }}</p>
+                        <p><strong>License:</strong> Lifetime access</p>
+                        
+                        <hr class="border-secondary">
+                        
+                        <h6>Categories</h6>
+                        <div>
+                            {% for category in movie.categories.all %}
+                                <span class="badge bg-secondary me-1">{{ category.name }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-4">
+                    <a href="{% url 'payments:featured_movies' %}" class="btn btn-outline-light">
+                        <i class="fas fa-film me-1"></i> Browse More Movies
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get the current date and format it
+        var now = new Date();
+        var options = { year: 'numeric', month: 'long', day: 'numeric' };
+        var formattedDate = now.toLocaleDateString('en-US', options);
+        
+        // Update the purchase date placeholder with the current date
+        var purchaseDateElement = document.getElementById('purchase-date');
+        if (purchaseDateElement) {
+            purchaseDateElement.textContent = formattedDate;
+        }
+        
+        // Add full screen toggle for video element
+        var videoElement = document.querySelector('video');
+        if (videoElement) {
+            videoElement.addEventListener('dblclick', function() {
+                if (videoElement.requestFullscreen) {
+                    videoElement.requestFullscreen();
+                } else if (videoElement.webkitRequestFullscreen) { /* Safari */
+                    videoElement.webkitRequestFullscreen();
+                } else if (videoElement.msRequestFullscreen) { /* IE11 */
+                    videoElement.msRequestFullscreen();
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

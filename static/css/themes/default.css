@@ -1,0 +1,32 @@
+/* Default Theme Override
+   This theme uses a dark Netflix-inspired color palette with purple accents
+*/
+
+:root {
+  /* Primary Palette - Dark Netflix-inspired with vibrant purple accents */
+  --primary-color: #6C63FF;
+  --primary-color-rgb: 108, 99, 255;
+  --secondary-color: #FF6584;
+  --secondary-color-rgb: 255, 101, 132;
+  --accent-color: #4EADDE;
+  --accent-color-rgb: 78, 173, 222;
+
+  /* Background Gradients */
+  --gradient-primary: linear-gradient(135deg, #6C63FF, #4834DF);
+  --gradient-secondary: linear-gradient(135deg, #FF6584, #FF4384);
+  --gradient-accent: linear-gradient(135deg, #4EADDE, #2578BE);
+  --gradient-hero: linear-gradient(to right, #0F0C29, #302B63, #24243E);
+
+  /* Dark Mode Specific */
+  --bg-color: #141414;  /* Netflix background color */
+  --surface-color: #181818;
+  --card-bg: #222222;
+  --input-bg: #333333;
+  --section-bg: #1A1A1A;
+  --section-alt-bg: #252525;
+  --border-color: #3A3A3A;
+
+  /* Typography */
+  --font-family-base: 'Netflix Sans', 'Poppins', sans-serif;
+  --font-family-heading: 'Netflix Sans Medium', 'Montserrat', sans-serif;
+}

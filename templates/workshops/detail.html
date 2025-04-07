@@ -1,0 +1,468 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Workshop Details{% endblock %}
+
+{% block extra_css %}
+<style>
+    .workshop-banner {
+        position: relative;
+        height: 50vh;
+        min-height: 400px;
+        background-color: var(--surface-color);
+        overflow: hidden;
+    }
+    
+    .workshop-banner-img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0.6;
+    }
+    
+    .workshop-banner-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.7) 100%);
+    }
+    
+    .workshop-banner-content {
+        position: relative;
+        z-index: 1;
+        color: white;
+        padding: 3rem 0;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+    }
+    
+    .workshop-status {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        border-radius: var(--border-radius);
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .workshop-status.upcoming {
+        background-color: var(--primary-color);
+    }
+    
+    .workshop-status.ongoing {
+        background-color: var(--warning-color);
+    }
+    
+    .workshop-status.completed {
+        background-color: var(--success-color);
+    }
+    
+    .workshop-status.cancelled {
+        background-color: var(--danger-color);
+    }
+    
+    .workshop-title {
+        font-size: 3rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+    }
+    
+    .workshop-date {
+        font-size: 1.25rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+    }
+    
+    .workshop-date-icon {
+        margin-right: 0.5rem;
+    }
+    
+    .workshop-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2rem;
+        margin-bottom: 1rem;
+    }
+    
+    .workshop-meta-item {
+        display: flex;
+        align-items: center;
+    }
+    
+    .workshop-meta-icon {
+        margin-right: 0.5rem;
+    }
+    
+    .workshop-content {
+        padding: 4rem 0;
+    }
+    
+    .workshop-sidebar {
+        position: sticky;
+        top: 100px;
+    }
+    
+    .workshop-card {
+        background-color: var(--card-bg);
+        border-radius: var(--border-radius-lg);
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    .workshop-price {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--text-color);
+        margin-bottom: 1.5rem;
+    }
+    
+    .workshop-price.free {
+        color: var(--success-color);
+    }
+    
+    .registration-status {
+        padding: 1.5rem;
+        text-align: center;
+        border-top: 1px solid var(--border-color);
+    }
+    
+    .detail-section {
+        margin-bottom: 3rem;
+    }
+    
+    .detail-section-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .instructor-profile {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .instructor-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 1.5rem;
+    }
+    
+    .instructor-info h4 {
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .instructor-bio {
+        margin-top: 1rem;
+        color: var(--text-color-muted);
+    }
+    
+    .workshop-details-list {
+        list-style: none;
+        padding: 0;
+    }
+    
+    .workshop-details-item {
+        display: flex;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .workshop-details-icon {
+        margin-right: 1rem;
+        color: var(--accent-color);
+        font-size: 1.25rem;
+        min-width: 1.25rem;
+        display: flex;
+        align-items: center;
+    }
+    
+    .workshop-requirements ul {
+        padding-left: 1.5rem;
+    }
+    
+    .workshop-requirements li {
+        margin-bottom: 0.75rem;
+    }
+    
+    .workshop-agenda-item {
+        margin-bottom: 1.5rem;
+    }
+    
+    .agenda-time {
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: var(--accent-color);
+    }
+    
+    .agenda-title {
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .agenda-description {
+        color: var(--text-color-muted);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="workshop-banner">
+    <img src="{% static 'img/workshop-placeholder.jpg' %}" alt="Workshop" class="workshop-banner-img">
+    <div class="workshop-banner-overlay"></div>
+    
+    <div class="container workshop-banner-content">
+        <span class="workshop-status upcoming">
+            <i class="fas fa-calendar-alt me-2"></i> Upcoming
+        </span>
+        
+        <h1 class="workshop-title">Photography Masterclass: Light & Composition</h1>
+        
+        <div class="workshop-date">
+            <i class="fas fa-calendar-day workshop-date-icon"></i>
+            <span>April 15, 2025 at 10:00 AM</span>
+        </div>
+        
+        <div class="workshop-meta">
+            <div class="workshop-meta-item">
+                <i class="fas fa-user workshop-meta-icon"></i>
+                <span>John Smith</span>
+            </div>
+            
+            <div class="workshop-meta-item">
+                <i class="fas fa-clock workshop-meta-icon"></i>
+                <span>4 hours</span>
+            </div>
+            
+            <div class="workshop-meta-item">
+                <i class="fas fa-map-marker-alt workshop-meta-icon"></i>
+                <span>Online</span>
+            </div>
+            
+            <div class="workshop-meta-item">
+                <i class="fas fa-user-friends workshop-meta-icon"></i>
+                <span>7/15 participants</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="workshop-content">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="detail-section">
+                    <h2 class="detail-section-title">About This Workshop</h2>
+                    <div class="workshop-description">
+                        <p>This comprehensive photography masterclass will elevate your understanding of light and composition to create stunning images in any setting. Learn the technical and artistic principles that professional photographers use to capture compelling visual stories.</p>
+                        
+                        <p>Through practical demonstrations and hands-on exercises, you'll develop the skills to control light, frame your subjects effectively, and create images with strong visual impact.</p>
+                    </div>
+                </div>
+                
+                <div class="detail-section">
+                    <h2 class="detail-section-title">What You'll Learn</h2>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul class="workshop-details-list">
+                                <li class="workshop-details-item">
+                                    <div class="workshop-details-icon">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                    <div>Understanding different light sources and how they affect your images</div>
+                                </li>
+                                <li class="workshop-details-item">
+                                    <div class="workshop-details-icon">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                    <div>Mastering the exposure triangle for perfect lighting in any situation</div>
+                                </li>
+                                <li class="workshop-details-item">
+                                    <div class="workshop-details-icon">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                    <div>Creating dramatic lighting effects using simple equipment</div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul class="workshop-details-list">
+                                <li class="workshop-details-item">
+                                    <div class="workshop-details-icon">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                    <div>Applying the rule of thirds, golden ratio, and other compositional guidelines</div>
+                                </li>
+                                <li class="workshop-details-item">
+                                    <div class="workshop-details-icon">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                    <div>Using lines, shapes, and patterns to create visual interest</div>
+                                </li>
+                                <li class="workshop-details-item">
+                                    <div class="workshop-details-icon">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                    <div>Developing your personal style through effective composition choices</div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="detail-section">
+                    <h2 class="detail-section-title">Requirements</h2>
+                    <div class="workshop-requirements">
+                        <ul>
+                            <li>Any camera (DSLR, mirrorless, or smartphone with manual controls recommended)</li>
+                            <li>Basic understanding of camera operation (exposure, focus, etc.)</li>
+                            <li>Computer with internet connection for the online session</li>
+                            <li>Optional: tripod, external flash or continuous lighting if available</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="detail-section">
+                    <h2 class="detail-section-title">Workshop Agenda</h2>
+                    <div class="workshop-agenda">
+                        <div class="workshop-agenda-item">
+                            <div class="agenda-time">10:00 AM - 11:00 AM</div>
+                            <div class="agenda-title">Introduction to Light in Photography</div>
+                            <div class="agenda-description">Understanding natural and artificial light sources, quality of light, direction, and color temperature.</div>
+                        </div>
+                        
+                        <div class="workshop-agenda-item">
+                            <div class="agenda-time">11:00 AM - 12:00 PM</div>
+                            <div class="agenda-title">Controlling and Modifying Light</div>
+                            <div class="agenda-description">Techniques for manipulating light using reflectors, diffusers, and flash. Shooting demonstrations and practice.</div>
+                        </div>
+                        
+                        <div class="workshop-agenda-item">
+                            <div class="agenda-time">12:00 PM - 12:30 PM</div>
+                            <div class="agenda-title">Break</div>
+                            <div class="agenda-description">Short refreshment break.</div>
+                        </div>
+                        
+                        <div class="workshop-agenda-item">
+                            <div class="agenda-time">12:30 PM - 1:30 PM</div>
+                            <div class="agenda-title">Fundamentals of Composition</div>
+                            <div class="agenda-description">Exploring compositional rules, framing techniques, and ways to create visual impact.</div>
+                        </div>
+                        
+                        <div class="workshop-agenda-item">
+                            <div class="agenda-time">1:30 PM - 2:00 PM</div>
+                            <div class="agenda-title">Guided Practice Session</div>
+                            <div class="agenda-description">Hands-on photography exercises applying the concepts learned, with personalized feedback.</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="detail-section">
+                    <h2 class="detail-section-title">About the Instructor</h2>
+                    <div class="instructor-profile">
+                        <img src="{% static 'img/avatar-placeholder.jpg' %}" alt="John Smith" class="instructor-avatar">
+                        <div class="instructor-info">
+                            <h4>John Smith</h4>
+                            <div>Professional Photographer & Educator</div>
+                        </div>
+                    </div>
+                    <div class="instructor-bio">
+                        <p>John is an award-winning photographer with over 15 years of experience in portrait, landscape, and commercial photography. His work has been featured in National Geographic, Vogue, and various international exhibitions.</p>
+                        <p>As an educator, John has taught photography workshops in more than 20 countries and has helped thousands of students improve their photography skills.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="workshop-sidebar">
+                    <div class="workshop-card">
+                        <div class="p-4">
+                            <div class="workshop-price">$99.00</div>
+                            
+                            <a href="#" class="btn btn-primary btn-lg w-100 mb-3">
+                                Register Now
+                            </a>
+                            
+                            <div class="text-center mb-3">
+                                <span class="text-muted">Only 8 spots left</span>
+                            </div>
+                            
+                            <ul class="workshop-details-list mt-4">
+                                <li class="workshop-details-item">
+                                    <div class="workshop-details-icon">
+                                        <i class="fas fa-calendar-day"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Date</strong><br>
+                                        April 15, 2025
+                                    </div>
+                                </li>
+                                
+                                <li class="workshop-details-item">
+                                    <div class="workshop-details-icon">
+                                        <i class="fas fa-clock"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Time</strong><br>
+                                        10:00 AM - 2:00 PM
+                                    </div>
+                                </li>
+                                
+                                <li class="workshop-details-item">
+                                    <div class="workshop-details-icon">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Location</strong><br>
+                                        Online (Zoom)
+                                    </div>
+                                </li>
+                                
+                                <li class="workshop-details-item">
+                                    <div class="workshop-details-icon">
+                                        <i class="fas fa-users"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Capacity</strong><br>
+                                        15 participants
+                                    </div>
+                                </li>
+                                
+                                <li class="workshop-details-item">
+                                    <div class="workshop-details-icon">
+                                        <i class="fas fa-certificate"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Certificate</strong><br>
+                                        Yes (upon completion)
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div class="registration-status">
+                            <a href="#" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-share-alt me-2"></i> Share Workshop
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

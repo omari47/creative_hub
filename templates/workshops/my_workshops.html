@@ -1,0 +1,236 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Workshops{% endblock %}
+
+{% block extra_css %}
+<style>
+    .my-workshops-header {
+        background: var(--gradient-hero);
+        padding: 8rem 0 5rem;
+        color: white;
+        text-align: center;
+    }
+    
+    .my-workshops-title {
+        font-size: 3rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+    }
+    
+    .my-workshops-subtitle {
+        font-size: 1.25rem;
+        max-width: 700px;
+        margin: 0 auto 2rem;
+        opacity: 0.9;
+    }
+    
+    .my-workshops-container {
+        padding: 4rem 0;
+    }
+    
+    .no-registrations {
+        padding: 4rem 0;
+        text-align: center;
+    }
+    
+    .no-registrations-icon {
+        color: var(--text-color-muted);
+        font-size: 4rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .no-registrations-message {
+        font-size: 1.5rem;
+        color: var(--text-color-muted);
+        margin-bottom: 2rem;
+    }
+    
+    .registration-card {
+        background-color: var(--card-bg);
+        border-radius: var(--border-radius-lg);
+        overflow: hidden;
+        margin-bottom: 2rem;
+        transition: var(--transition-normal);
+    }
+    
+    .registration-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+    }
+    
+    .registration-content {
+        display: flex;
+        padding: 1.5rem;
+    }
+    
+    .registration-image {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: var(--border-radius);
+        margin-right: 1.5rem;
+    }
+    
+    .registration-details {
+        flex-grow: 1;
+    }
+    
+    .registration-title {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+        color: var(--text-color);
+    }
+    
+    .registration-date {
+        display: inline-block;
+        background-color: rgba(var(--primary-color-rgb), 0.1);
+        color: var(--primary-color);
+        padding: 0.35rem 0.75rem;
+        border-radius: var(--border-radius);
+        font-size: 0.85rem;
+        margin-bottom: 1rem;
+    }
+    
+    .registration-info-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.5rem;
+        color: var(--text-color-muted);
+    }
+    
+    .registration-info-icon {
+        margin-right: 0.5rem;
+        color: var(--text-color-muted);
+    }
+    
+    .registration-status {
+        margin-left: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        justify-content: space-between;
+    }
+    
+    .status-badge {
+        padding: 0.5rem 1rem;
+        border-radius: var(--border-radius);
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+    }
+    
+    .status-badge.upcoming {
+        background-color: rgba(var(--primary-color-rgb), 0.1);
+        color: var(--primary-color);
+    }
+    
+    .status-badge.completed {
+        background-color: rgba(var(--success-color-rgb), 0.1);
+        color: var(--success-color);
+    }
+    
+    .status-badge.cancelled {
+        background-color: rgba(var(--danger-color-rgb), 0.1);
+        color: var(--danger-color);
+    }
+    
+    .status-badge.ongoing {
+        background-color: rgba(var(--warning-color-rgb), 0.1);
+        color: var(--warning-color);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="my-workshops-header">
+    <div class="container">
+        <h1 class="my-workshops-title reveal">My Workshops</h1>
+        <p class="my-workshops-subtitle reveal">View all the workshops you have registered for.</p>
+    </div>
+</section>
+
+<section class="my-workshops-container">
+    <div class="container">
+        {% if registrations %}
+        <div class="row">
+            {% for registration in registrations %}
+            <div class="col-12 mb-4">
+                <div class="registration-card reveal">
+                    <div class="registration-content">
+                        <img src="{% if registration.workshop.image %}{{ registration.workshop.image.url }}{% else %}{% static 'img/workshop-placeholder.jpg' %}{% endif %}" alt="{{ registration.workshop.title }}" class="registration-image">
+                        
+                        <div class="registration-details">
+                            <h3 class="registration-title">{{ registration.workshop.title }}</h3>
+                            <span class="registration-date">{{ registration.workshop.start_date|date:"F j, Y" }} at {{ registration.workshop.start_time|time:"g:i A" }}</span>
+                            
+                            <div class="registration-info">
+                                <div class="registration-info-item">
+                                    <i class="fas fa-user-tie registration-info-icon"></i>
+                                    <span>Instructor: {{ registration.workshop.instructor.get_full_name|default:registration.workshop.instructor.username }}</span>
+                                </div>
+                                
+                                <div class="registration-info-item">
+                                    <i class="fas fa-clock registration-info-icon"></i>
+                                    <span>Duration: {{ registration.workshop.duration }} hours</span>
+                                </div>
+                                
+                                <div class="registration-info-item">
+                                    <i class="fas fa-map-marker-alt registration-info-icon"></i>
+                                    <span>{{ registration.workshop.get_location_type_display }}</span>
+                                </div>
+                                
+                                {% if registration.workshop.location_url %}
+                                <div class="registration-info-item">
+                                    <i class="fas fa-link registration-info-icon"></i>
+                                    <span>
+                                        <a href="{{ registration.workshop.location_url }}" target="_blank">Join Online</a>
+                                    </span>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="registration-status">
+                            {% if registration.workshop.is_completed %}
+                            <span class="status-badge completed">
+                                <i class="fas fa-check-circle me-1"></i> Completed
+                            </span>
+                            {% elif registration.workshop.is_ongoing %}
+                            <span class="status-badge ongoing">
+                                <i class="fas fa-circle me-1"></i> Ongoing
+                            </span>
+                            {% elif registration.is_cancelled %}
+                            <span class="status-badge cancelled">
+                                <i class="fas fa-times-circle me-1"></i> Cancelled
+                            </span>
+                            {% else %}
+                            <span class="status-badge upcoming">
+                                <i class="fas fa-calendar-alt me-1"></i> Upcoming
+                            </span>
+                            {% endif %}
+                            
+                            <a href="#" class="btn btn-outline-primary">
+                                View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="no-registrations">
+            <div class="no-registrations-icon">
+                <i class="fas fa-calendar-times"></i>
+            </div>
+            <h3 class="no-registrations-message">You haven't registered for any workshops yet</h3>
+            <p class="mb-4">Explore our workshops and sign up for ones that interest you.</p>
+            <a href="{% url 'workshops:list' %}" class="btn btn-primary">
+                <i class="fas fa-search me-2"></i> Browse Workshops
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

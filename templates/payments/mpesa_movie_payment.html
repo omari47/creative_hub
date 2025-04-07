@@ -1,0 +1,222 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}M-Pesa Payment for {{ movie.title }} | Creative Platform{% endblock %}
+
+{% block extra_css %}
+<style>
+    .payment-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .movie-thumbnail {
+        width: 100%;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+    }
+    
+    .payment-header {
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .payment-instructions {
+        background-color: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+    }
+    
+    .instruction-step {
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: flex-start;
+    }
+    
+    .step-number {
+        background-color: #00a374;
+        color: white;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin-right: 1rem;
+        flex-shrink: 0;
+    }
+    
+    .mpesa-form {
+        background-color: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 8px;
+    }
+    
+    .mpesa-logo {
+        max-height: 60px;
+        margin-bottom: 1rem;
+    }
+    
+    .timer-container {
+        text-align: center;
+        margin-top: 1.5rem;
+    }
+    
+    .countdown {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #dc3545;
+    }
+    
+    .phone-input {
+        position: relative;
+    }
+    
+    .phone-prefix {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #495057;
+        font-weight: bold;
+    }
+    
+    .phone-input input {
+        padding-left: 55px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container payment-container">
+    <div class="payment-header">
+        <div class="row align-items-center">
+            <div class="col-md-3">
+                <img src="{{ movie.thumbnail.url }}" alt="{{ movie.title }}" class="movie-thumbnail">
+            </div>
+            <div class="col-md-9">
+                <h2>Purchase: {{ movie.title }}</h2>
+                <p class="text-muted">{{ movie.description|truncatechars:150 }}</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">${{ purchase.amount }}</h4>
+                    <span class="badge bg-info">M-Pesa Payment</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="payment-instructions">
+        <h5 class="mb-3">How M-Pesa Payment Works:</h5>
+        
+        <div class="instruction-step">
+            <div class="step-number">1</div>
+            <div>Enter your M-Pesa registered phone number below.</div>
+        </div>
+        
+        <div class="instruction-step">
+            <div class="step-number">2</div>
+            <div>After submitting, you'll receive a payment prompt on your phone.</div>
+        </div>
+        
+        <div class="instruction-step">
+            <div class="step-number">3</div>
+            <div>Enter your M-Pesa PIN to complete the transaction.</div>
+        </div>
+        
+        <div class="instruction-step">
+            <div class="step-number">4</div>
+            <div>Once the payment is confirmed, you'll be redirected to watch the movie.</div>
+        </div>
+    </div>
+    
+    <div class="mpesa-form">
+        <div class="text-center mb-4">
+            <img src="/static/img/mpesa-logo.png" alt="M-Pesa" class="mpesa-logo">
+            <h4>Enter Your Phone Number</h4>
+            <p class="text-muted">We'll send a payment request to this number</p>
+        </div>
+        
+        <form method="post" action="{% url 'payments:mpesa_payment_initiate' purchase.id %}">
+            {% csrf_token %}
+            
+            <div class="mb-3 phone-input">
+                <label for="phone_number" class="form-label">M-Pesa Phone Number</label>
+                <span class="phone-prefix">+254</span>
+                <input type="text" class="form-control" id="phone_number" name="phone_number" 
+                       placeholder="7XXXXXXXX" required>
+                <div class="form-text">Enter your number in format 7XXXXXXXX or 07XXXXXXXX</div>
+            </div>
+            
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-success btn-lg">
+                    <i class="fas fa-mobile-alt me-2"></i> Request Payment
+                </button>
+                <a href="{% url 'payments:movie_detail' movie.pk %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i> Back to Movie
+                </a>
+            </div>
+        </form>
+        
+        <div class="timer-container">
+            <p>This payment request will expire in:</p>
+            <div class="countdown" id="countdown">10:00</div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Countdown timer
+    document.addEventListener('DOMContentLoaded', function() {
+        // Set the countdown time to 10 minutes
+        var countdownTime = 10 * 60;
+        var countdownElement = document.getElementById('countdown');
+        
+        function updateCountdown() {
+            var minutes = Math.floor(countdownTime / 60);
+            var seconds = countdownTime % 60;
+            
+            // Format the time as MM:SS
+            countdownElement.textContent = 
+                (minutes < 10 ? '0' : '') + minutes + ':' + 
+                (seconds < 10 ? '0' : '') + seconds;
+            
+            if (countdownTime <= 0) {
+                clearInterval(countdownInterval);
+                countdownElement.textContent = '00:00';
+                alert('Payment request has expired. Please try again.');
+                window.location.href = "{% url 'payments:movie_detail' movie.pk %}";
+            } else {
+                countdownTime--;
+            }
+        }
+        
+        // Update countdown every second
+        updateCountdown();
+        var countdownInterval = setInterval(updateCountdown, 1000);
+        
+        // Phone number formatting
+        var phoneInput = document.getElementById('phone_number');
+        phoneInput.addEventListener('input', function(e) {
+            // Remove any non-digit characters
+            var input = e.target.value.replace(/\D/g, '');
+            
+            // Remove the leading 0 if present
+            if (input.startsWith('0')) {
+                input = input.substring(1);
+            }
+            
+            // Update the input value
+            e.target.value = input;
+        });
+    });
+</script>
+{% endblock %}

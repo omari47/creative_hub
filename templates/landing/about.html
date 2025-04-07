@@ -1,0 +1,257 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About Us - Creative Platform{% endblock %}
+
+{% block extra_css %}
+<style>
+    .about-hero {
+        background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+                    url('https://source.unsplash.com/random/1920x600/?creative,studio') no-repeat center center/cover;
+        color: #fff;
+        padding: 8rem 0;
+        text-align: center;
+        position: relative;
+    }
+
+    .about-section {
+        padding: 5rem 0;
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    .about-image {
+        border-radius: 10px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .about-image img {
+        width: 100%;
+        height: auto;
+        transition: transform 0.5s ease;
+    }
+
+    .about-image:hover img {
+        transform: scale(1.05);
+    }
+
+    .team-member {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .team-member-img {
+        width: 180px;
+        height: 180px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 5px solid rgba(255, 255, 255, 0.2);
+        margin-bottom: 1rem;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .team-member:hover .team-member-img {
+        transform: translateY(-10px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .social-links {
+        display: flex;
+        justify-content: center;
+        gap: 0.8rem;
+        margin-top: 1rem;
+    }
+
+    .social-links a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background-color: var(--accent-color);
+        color: #fff;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+
+    .social-links a:hover {
+        background-color: var(--primary-color);
+        transform: scale(1.1);
+    }
+    
+    .value-item {
+        text-align: center;
+        padding: 2rem;
+        border-radius: 10px;
+        background-color: var(--card-bg);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        height: 100%;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .value-item:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    .value-icon {
+        font-size: 2.5rem;
+        color: var(--accent-color);
+        margin-bottom: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- About Hero Section -->
+<section class="about-hero">
+    <div class="container">
+        <h1 class="display-4 mb-4">About Creative Platform</h1>
+        <p class="lead">A Netflix-style platform for creatives to showcase and discover exceptional work</p>
+    </div>
+</section>
+
+<!-- Our Story Section -->
+<section class="about-section" id="our-story">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-5 mb-lg-0">
+                <div class="about-image">
+                    <img src="https://source.unsplash.com/random/600x400/?creative,workspace" alt="Our story">
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <h2 class="mb-4">Our Story</h2>
+                <p class="lead mb-4">Creative Platform was born from a passion for showcasing extraordinary talent.</p>
+                <p>Founded in 2023, we set out to create a space where photographers, videographers, and other creative professionals could share their work with the world. Our platform serves as both a portfolio showcase and a learning hub, connecting creators with audiences who appreciate their craft.</p>
+                <p>What began as a simple gallery has evolved into a comprehensive platform featuring premium content, interactive workshops, and a vibrant community of creatives from around the globe.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Our Values Section -->
+<section class="about-section bg-light" id="our-values">
+    <div class="container">
+        <h2 class="text-center mb-5">Our Values</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="value-item">
+                    <div class="value-icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <h3 class="h4 mb-3">Creativity</h3>
+                    <p>We believe in pushing boundaries and exploring new frontiers in creative expression. Our platform celebrates innovation and artistic vision.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="value-item">
+                    <div class="value-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3 class="h4 mb-3">Community</h3>
+                    <p>We foster a supportive environment where creatives can connect, collaborate, and grow together. Our community is built on respect and mutual inspiration.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="value-item">
+                    <div class="value-icon">
+                        <i class="fas fa-award"></i>
+                    </div>
+                    <h3 class="h4 mb-3">Quality</h3>
+                    <p>We're committed to showcasing the highest quality creative work. Our platform maintains standards that highlight exceptional talent and craftsmanship.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Our Team Section -->
+<section class="about-section" id="our-team">
+    <div class="container">
+        <h2 class="text-center mb-5">Meet Our Team</h2>
+        <div class="row">
+            <div class="col-lg-4 col-md-6">
+                <div class="team-member">
+                    <img src="https://source.unsplash.com/random/200x200/?portrait,professional" alt="Team Member" class="team-member-img">
+                    <h3 class="h4">Jane Doe</h3>
+                    <p class="text-muted">Founder & Creative Director</p>
+                    <p>With over 15 years of experience in photography and visual arts, Jane leads our creative vision.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="team-member">
+                    <img src="https://source.unsplash.com/random/200x200/?portrait,man" alt="Team Member" class="team-member-img">
+                    <h3 class="h4">John Smith</h3>
+                    <p class="text-muted">Head of Workshops</p>
+                    <p>John brings his expertise in education and filmmaking to curate our workshop offerings.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="team-member">
+                    <img src="https://source.unsplash.com/random/200x200/?portrait,woman" alt="Team Member" class="team-member-img">
+                    <h3 class="h4">Emily Chen</h3>
+                    <p class="text-muted">Technical Director</p>
+                    <p>Emily oversees the platform's development, ensuring a seamless experience for creators and users alike.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Join Us CTA Section -->
+<section class="about-section bg-primary text-white" id="join-us">
+    <div class="container text-center">
+        <h2 class="mb-4">Join Our Creative Community</h2>
+        <p class="lead mb-4">Whether you're a creator looking to showcase your work or an enthusiast seeking inspiration, there's a place for you on our platform.</p>
+        <a href="{% url 'account_signup' %}" class="btn btn-light btn-lg">Sign Up Today</a>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Scroll animations
+        // ScrollTrigger removed to fix console errors
+        
+        // Simple reveal animations using Intersection Observer instead of ScrollTrigger
+        const sections = document.querySelectorAll('.about-section');
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    gsap.to(entry.target, {
+                        opacity: 1,
+                        y: 0,
+                        duration: 1
+                    });
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, {threshold: 0.2});
+        
+        sections.forEach(section => {
+            section.style.opacity = 0;
+            section.style.transform = 'translateY(20px)';
+            observer.observe(section);
+        });
+    });
+</script>
+{% endblock %}

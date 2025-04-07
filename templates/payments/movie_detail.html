@@ -1,0 +1,435 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ movie.title }} | Creative Platform{% endblock %}
+
+{% block extra_css %}
+<style>
+    .movie-banner {
+        background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.9)), 
+                          url('{{ movie.banner_image.url }}');
+        background-size: cover;
+        background-position: center;
+        min-height: 500px;
+        color: white;
+        padding: 4rem 0;
+        margin-bottom: 2rem;
+    }
+    
+    .movie-poster {
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        margin-bottom: 1.5rem;
+    }
+    
+    .movie-info {
+        color: white;
+        padding: 2rem;
+    }
+    
+    .meta-item {
+        margin-right: 1.5rem;
+        margin-bottom: 0.5rem;
+        display: inline-block;
+    }
+    
+    .meta-item i {
+        margin-right: 0.5rem;
+        color: #e50914;
+    }
+    
+    .cta-buttons {
+        margin-top: 2rem;
+    }
+    
+    .cta-buttons .btn {
+        margin-right: 1rem;
+        margin-bottom: 1rem;
+        min-width: 160px;
+    }
+    
+    .btn-watch {
+        background-color: #e50914;
+        border-color: #e50914;
+    }
+    
+    .btn-watch:hover {
+        background-color: #ff0a16;
+        border-color: #ff0a16;
+    }
+    
+    .btn-purchase {
+        background-color: #0071eb;
+        border-color: #0071eb;
+    }
+    
+    .btn-purchase:hover {
+        background-color: #0080ff;
+        border-color: #0080ff;
+    }
+    
+    .related-movies {
+        padding: 2rem 0;
+    }
+    
+    .related-title {
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        color: #333;
+    }
+    
+    .related-card {
+        transition: transform 0.3s;
+        margin-bottom: 1.5rem;
+    }
+    
+    .related-card:hover {
+        transform: scale(1.03);
+    }
+    
+    .payment-options {
+        margin-top: 2rem;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        padding: 1.5rem;
+    }
+    
+    .payment-option {
+        background-color: white;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        cursor: pointer;
+        transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    
+    .payment-option:hover {
+        border-color: #0071eb;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .payment-option.active {
+        border-color: #0071eb;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .payment-logo {
+        height: 40px;
+        object-fit: contain;
+    }
+    
+    #payment-form {
+        margin-top: 1.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="movie-banner">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <img src="{{ movie.thumbnail.url }}" alt="{{ movie.title }}" class="img-fluid movie-poster">
+            </div>
+            <div class="col-md-8 movie-info">
+                <h1 class="display-4">{{ movie.title }}</h1>
+                {% if movie.subtitle %}
+                    <h4 class="text-muted">{{ movie.subtitle }}</h4>
+                {% endif %}
+                
+                <div class="my-4">
+                    <div class="meta-item">
+                        <i class="fas fa-calendar-alt"></i> {{ movie.release_year }}
+                    </div>
+                    <div class="meta-item">
+                        <i class="fas fa-clock"></i> {{ movie.duration_minutes }} min
+                    </div>
+                    {% if movie.rating %}
+                    <div class="meta-item">
+                        <i class="fas fa-star"></i> {{ movie.rating }}/10
+                    </div>
+                    {% endif %}
+                    {% if movie.language %}
+                    <div class="meta-item">
+                        <i class="fas fa-language"></i> {{ movie.language }}
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="my-3">
+                    {% for category in movie.categories.all %}
+                        <span class="badge bg-secondary me-2">{{ category.name }}</span>
+                    {% endfor %}
+                </div>
+                
+                <p class="lead">{{ movie.description }}</p>
+                
+                <div class="my-3">
+                    {% if movie.director %}
+                    <p><strong>Director:</strong> {{ movie.director }}</p>
+                    {% endif %}
+                    {% if movie.cast %}
+                    <p><strong>Cast:</strong> {{ movie.cast }}</p>
+                    {% endif %}
+                </div>
+                
+                <div class="pricing my-4">
+                    {% if movie.discount_price %}
+                        <h3>
+                            <span class="text-danger">${{ movie.discount_price }}</span> 
+                            <small><del class="text-muted">${{ movie.price }}</del></small>
+                        </h3>
+                    {% else %}
+                        <h3>${{ movie.price }}</h3>
+                    {% endif %}
+                </div>
+                
+                <div class="cta-buttons">
+                    {% if has_purchased %}
+                        <a href="{% url 'payments:watch_movie' movie.pk %}" class="btn btn-lg btn-watch">
+                            <i class="fas fa-play-circle"></i> Watch Now
+                        </a>
+                    {% else %}
+                        <button id="purchase-btn" class="btn btn-lg btn-purchase">
+                            <i class="fas fa-shopping-cart"></i> Purchase
+                        </button>
+                    {% endif %}
+                    
+                    {% if movie.trailer %}
+                        <button data-bs-toggle="modal" data-bs-target="#trailerModal" class="btn btn-lg btn-outline-light">
+                            <i class="fas fa-film"></i> Watch Trailer
+                        </button>
+                    {% endif %}
+                </div>
+                
+                {% if not has_purchased %}
+                <div id="payment-options" class="payment-options" style="display: none;">
+                    <h5 class="mb-3">Select Payment Method</h5>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="payment-option active" data-payment="stripe">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">Credit Card</h6>
+                                        <p class="text-muted mb-0 small">Pay with Visa, Mastercard, etc.</p>
+                                    </div>
+                                    <img src="/static/img/stripe-logo.png" alt="Stripe" class="payment-logo">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="payment-option" data-payment="mpesa">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">M-Pesa</h6>
+                                        <p class="text-muted mb-0 small">Pay with mobile money (Kenya)</p>
+                                    </div>
+                                    <img src="/static/img/mpesa-logo.png" alt="M-Pesa" class="payment-logo">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="stripe-payment" class="mt-4">
+                        <form id="payment-form">
+                            <div id="stripe-button-container" class="text-center">
+                                <button id="stripe-button" class="btn btn-primary btn-lg w-100">
+                                    <i class="fas fa-credit-card"></i> Pay with Card ${{ movie.price }}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <div id="mpesa-payment" class="mt-4" style="display: none;">
+                        <a href="{% url 'payments:mpesa_payment_initiate' 0 %}" class="btn btn-success btn-lg w-100">
+                            <i class="fas fa-mobile-alt"></i> Pay with M-Pesa
+                        </a>
+                        <p class="small text-center mt-2">
+                            <i class="fas fa-info-circle"></i> 
+                            You'll be redirected to enter your M-Pesa phone number.
+                        </p>
+                    </div>
+                </div>
+                {% endif %}
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if related_movies %}
+<div class="related-movies">
+    <div class="container">
+        <h3 class="related-title">You May Also Like</h3>
+        <div class="row">
+            {% for related in related_movies %}
+            <div class="col-md-4">
+                <div class="card related-card">
+                    <img src="{{ related.thumbnail.url }}" class="card-img-top" alt="{{ related.title }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ related.title }}</h5>
+                        <p class="card-text">{{ related.description|truncatechars:100 }}</p>
+                        <a href="{% url 'payments:movie_detail' related.pk %}" class="btn btn-primary">View Details</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if movie.trailer %}
+<!-- Trailer Modal -->
+<div class="modal fade" id="trailerModal" tabindex="-1" aria-labelledby="trailerModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content bg-dark">
+            <div class="modal-header border-0">
+                <h5 class="modal-title text-white" id="trailerModalLabel">{{ movie.title }} - Trailer</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div class="ratio ratio-16x9">
+                    <iframe src="{{ movie.trailer.trailer_url }}" title="{{ movie.title }} trailer" allowfullscreen></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Payment selection
+        const purchaseBtn = document.getElementById('purchase-btn');
+        const paymentOptions = document.getElementById('payment-options');
+        const stripePayment = document.getElementById('stripe-payment');
+        const mpesaPayment = document.getElementById('mpesa-payment');
+        const paymentOptionButtons = document.querySelectorAll('.payment-option');
+        
+        if (purchaseBtn) {
+            purchaseBtn.addEventListener('click', function() {
+                paymentOptions.style.display = 'block';
+                purchaseBtn.style.display = 'none';
+            });
+        }
+        
+        paymentOptionButtons.forEach(function(option) {
+            option.addEventListener('click', function() {
+                // Remove active class from all options
+                paymentOptionButtons.forEach(opt => opt.classList.remove('active'));
+                
+                // Add active class to clicked option
+                this.classList.add('active');
+                
+                const paymentType = this.getAttribute('data-payment');
+                
+                if (paymentType === 'stripe') {
+                    stripePayment.style.display = 'block';
+                    mpesaPayment.style.display = 'none';
+                } else if (paymentType === 'mpesa') {
+                    stripePayment.style.display = 'none';
+                    mpesaPayment.style.display = 'block';
+                    
+                    // Update the M-Pesa link with the proper purchase ID
+                    // This is a placeholder, you'll need to create the purchase record first
+                    document.querySelector('#mpesa-payment a').addEventListener('click', function(e) {
+                        e.preventDefault();
+                        
+                        // Create a pending purchase record first
+                        fetch("{% url 'payments:purchase_movie' movie.pk %}", {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRFToken': getCookie('csrftoken'),
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                payment_method: 'mpesa'
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.purchase_id) {
+                                window.location.href = "{% url 'payments:mpesa_payment_initiate' 0 %}".replace('0', data.purchase_id);
+                            } else {
+                                alert('Error creating purchase record. Please try again.');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('An error occurred. Please try again.');
+                        });
+                    });
+                }
+            });
+        });
+        
+        // Stripe payment handling
+        if (document.getElementById('stripe-button')) {
+            document.getElementById('stripe-button').addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Show loading indicator
+                this.disabled = true;
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                
+                // Make request to the server to create Stripe session
+                fetch("{% url 'payments:purchase_movie' movie.pk %}", {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken'),
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(function(data) {
+                    if (data.error) {
+                        alert(data.error);
+                        return;
+                    }
+                    
+                    const stripe = Stripe('{{ stripe_publishable_key }}');
+                    stripe.redirectToCheckout({
+                        sessionId: data.id
+                    }).then(function(result) {
+                        if (result.error) {
+                            alert(result.error.message);
+                        }
+                    });
+                })
+                .catch(function(error) {
+                    console.error('Error:', error);
+                    alert('An error occurred while processing your payment. Please try again.');
+                })
+                .finally(function() {
+                    document.getElementById('stripe-button').disabled = false;
+                    document.getElementById('stripe-button').innerHTML = '<i class="fas fa-credit-card"></i> Pay with Card ${{ movie.price }}';
+                });
+            });
+        }
+        
+        // Helper function to get CSRF token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,394 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Testimonials - Creative Platform{% endblock %}
+
+{% block extra_css %}
+<style>
+    .testimonials-hero {
+        background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+                    url('https://source.unsplash.com/random/1920x600/?creative,team') no-repeat center center/cover;
+        color: #fff;
+        padding: 6rem 0;
+        text-align: center;
+    }
+
+    .testimonials-section {
+        padding: 5rem 0;
+    }
+
+    .testimonial-card {
+        background-color: var(--card-bg);
+        border-radius: 10px;
+        padding: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .testimonial-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .testimonial-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .testimonial-avatar {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 1rem;
+        border: 3px solid var(--accent-color);
+    }
+
+    .testimonial-info h4 {
+        margin-bottom: 0.2rem;
+    }
+
+    .testimonial-rating {
+        color: #ffc107;
+        margin-bottom: 0.5rem;
+    }
+
+    .testimonial-content {
+        font-style: italic;
+        margin-bottom: 1.5rem;
+        position: relative;
+    }
+
+    .testimonial-content::before {
+        content: '\201C';
+        font-size: 4rem;
+        font-family: Georgia, serif;
+        color: var(--accent-color);
+        opacity: 0.3;
+        position: absolute;
+        top: -20px;
+        left: -15px;
+    }
+
+    .testimonial-content::after {
+        content: '\201D';
+        font-size: 4rem;
+        font-family: Georgia, serif;
+        color: var(--accent-color);
+        opacity: 0.3;
+        position: absolute;
+        bottom: -45px;
+        right: -15px;
+    }
+
+    .testimonial-project {
+        color: var(--text-color-muted);
+    }
+
+    .stats-section {
+        background-color: var(--section-alt-bg);
+        padding: 5rem 0;
+        text-align: center;
+    }
+
+    .stat-item {
+        margin-bottom: 2rem;
+    }
+
+    .stat-number {
+        font-size: 3rem;
+        font-weight: 700;
+        color: var(--accent-color);
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .stat-label {
+        font-size: 1.1rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .cta-section {
+        padding: 5rem 0;
+        text-align: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Testimonials Hero Section -->
+<section class="testimonials-hero">
+    <div class="container">
+        <h1 class="display-4 mb-4">Client Testimonials</h1>
+        <p class="lead">What our community says about Creative Platform</p>
+    </div>
+</section>
+
+<!-- Featured Testimonials Section -->
+<section class="testimonials-section">
+    <div class="container">
+        <h2 class="text-center mb-5">Featured Testimonials</h2>
+        
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="testimonial-card">
+                    <div class="testimonial-header">
+                        <img src="https://source.unsplash.com/random/150x150/?portrait,woman" alt="Sarah Johnson" class="testimonial-avatar">
+                        <div class="testimonial-info">
+                            <h4>Sarah Johnson</h4>
+                            <p class="testimonial-project">Photographer</p>
+                            <div class="testimonial-rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-content">
+                        <p>Creative Platform has transformed the way I share my photography work. The sleek, modern interface perfectly showcases my portfolio, and I've received numerous workshop registrations through the platform. The theme customization is a game-changer - my profile truly reflects my personal brand!</p>
+                    </div>
+                    <div class="testimonial-date">January 15, 2023</div>
+                </div>
+            </div>
+            
+            <div class="col-lg-6">
+                <div class="testimonial-card">
+                    <div class="testimonial-header">
+                        <img src="https://source.unsplash.com/random/150x150/?portrait,man" alt="David Martinez" class="testimonial-avatar">
+                        <div class="testimonial-info">
+                            <h4>David Martinez</h4>
+                            <p class="testimonial-project">Videographer</p>
+                            <div class="testimonial-rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-content">
+                        <p>As a videographer, finding a platform that properly displays my work has always been challenging. Creative Platform not only solved this problem but exceeded my expectations. The featured movies section allows me to monetize my premium content effortlessly, and the user experience is incredible.</p>
+                    </div>
+                    <div class="testimonial-date">February 8, 2023</div>
+                </div>
+            </div>
+            
+            <div class="col-lg-6">
+                <div class="testimonial-card">
+                    <div class="testimonial-header">
+                        <img src="https://source.unsplash.com/random/150x150/?portrait,girl" alt="Emily Chen" class="testimonial-avatar">
+                        <div class="testimonial-info">
+                            <h4>Emily Chen</h4>
+                            <p class="testimonial-project">Workshop Participant</p>
+                            <div class="testimonial-rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-content">
+                        <p>I've attended several workshops through Creative Platform, and the entire process from discovery to registration is seamless. I love how I can keep track of all my bookings in one place, and the quality of content from creators on this platform is consistently outstanding. It's become my go-to resource for creative learning.</p>
+                    </div>
+                    <div class="testimonial-date">March 22, 2023</div>
+                </div>
+            </div>
+            
+            <div class="col-lg-6">
+                <div class="testimonial-card">
+                    <div class="testimonial-header">
+                        <img src="https://source.unsplash.com/random/150x150/?portrait,boy" alt="Michael Robinson" class="testimonial-avatar">
+                        <div class="testimonial-info">
+                            <h4>Michael Robinson</h4>
+                            <p class="testimonial-project">Event Organizer</p>
+                            <div class="testimonial-rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-content">
+                        <p>Creative Platform has revolutionized how I promote and organize creative events. The responsive design works perfectly across all devices, making it easy for attendees to register whether they're on mobile or desktop. The payment integration is flawless, and the admin dashboard gives me all the insights I need.</p>
+                    </div>
+                    <div class="testimonial-date">April 10, 2023</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Statistics Section -->
+<section class="stats-section">
+    <div class="container">
+        <h2 class="text-center mb-5">Our Growing Community</h2>
+        
+        <div class="row">
+            <div class="col-md-3 col-6">
+                <div class="stat-item">
+                    <span class="stat-number" data-count="5000">0</span>
+                    <span class="stat-label">Active Users</span>
+                </div>
+            </div>
+            
+            <div class="col-md-3 col-6">
+                <div class="stat-item">
+                    <span class="stat-number" data-count="12500">0</span>
+                    <span class="stat-label">Media Items</span>
+                </div>
+            </div>
+            
+            <div class="col-md-3 col-6">
+                <div class="stat-item">
+                    <span class="stat-number" data-count="250">0</span>
+                    <span class="stat-label">Workshops Hosted</span>
+                </div>
+            </div>
+            
+            <div class="col-md-3 col-6">
+                <div class="stat-item">
+                    <span class="stat-number" data-count="1800">0</span>
+                    <span class="stat-label">Premium Movies</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Client Logos Section -->
+<section class="testimonials-section">
+    <div class="container">
+        <h2 class="text-center mb-5">Trusted By Creative Professionals</h2>
+        
+        <div class="row align-items-center text-center">
+            <div class="col-md-3 col-6 mb-4">
+                <svg width="150" height="60" viewBox="0 0 150 60">
+                    <rect width="150" height="60" fill="none"/>
+                    <text x="75" y="35" font-family="Arial" font-size="14" font-weight="bold" text-anchor="middle" fill="currentColor">CAMERA PRO</text>
+                </svg>
+            </div>
+            
+            <div class="col-md-3 col-6 mb-4">
+                <svg width="150" height="60" viewBox="0 0 150 60">
+                    <rect width="150" height="60" fill="none"/>
+                    <text x="75" y="35" font-family="Arial" font-size="14" font-weight="bold" text-anchor="middle" fill="currentColor">STUDIO WORKS</text>
+                </svg>
+            </div>
+            
+            <div class="col-md-3 col-6 mb-4">
+                <svg width="150" height="60" viewBox="0 0 150 60">
+                    <rect width="150" height="60" fill="none"/>
+                    <text x="75" y="35" font-family="Arial" font-size="14" font-weight="bold" text-anchor="middle" fill="currentColor">VISUAL ARTS</text>
+                </svg>
+            </div>
+            
+            <div class="col-md-3 col-6 mb-4">
+                <svg width="150" height="60" viewBox="0 0 150 60">
+                    <rect width="150" height="60" fill="none"/>
+                    <text x="75" y="35" font-family="Arial" font-size="14" font-weight="bold" text-anchor="middle" fill="currentColor">FILM MAGIC</text>
+                </svg>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action Section -->
+<section class="cta-section bg-primary text-white">
+    <div class="container">
+        <h2 class="mb-4">Ready to Join Our Creative Community?</h2>
+        <p class="lead mb-4">Experience the platform that creative professionals trust.</p>
+        <div>
+            <a href="{% url 'account_signup' %}" class="btn btn-light btn-lg me-3">Sign Up Now</a>
+            <a href="{% url 'landing:contact' %}" class="btn btn-outline-light btn-lg">Contact Us</a>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animate testimonial cards on scroll
+        // ScrollTrigger removed to fix console errors
+        
+        // Use Intersection Observer instead of ScrollTrigger
+        const cards = document.querySelectorAll('.testimonial-card');
+        
+        // Set initial styles
+        cards.forEach(card => {
+            card.style.opacity = 0;
+            card.style.transform = 'translateY(50px)';
+        });
+        
+        // Create observer
+        const cardObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry, index) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => {
+                        gsap.to(entry.target, {
+                            opacity: 1,
+                            y: 0,
+                            duration: 0.8
+                        });
+                    }, index * 200); // Staggered animation
+                    
+                    cardObserver.unobserve(entry.target);
+                }
+            });
+        }, {threshold: 0.2});
+        
+        // Observe elements
+        cards.forEach(card => {
+            cardObserver.observe(card);
+        });
+        
+        // Animate stats counter
+        const statNumbers = document.querySelectorAll('.stat-number');
+        
+        function animateStats() {
+            statNumbers.forEach(stat => {
+                const target = parseInt(stat.dataset.count, 10);
+                const duration = 2000; // Duration in milliseconds
+                
+                let startTimestamp = null;
+                const step = (timestamp) => {
+                    if (!startTimestamp) startTimestamp = timestamp;
+                    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                    stat.textContent = Math.floor(progress * target).toLocaleString();
+                    
+                    if (progress < 1) {
+                        window.requestAnimationFrame(step);
+                    }
+                };
+                
+                window.requestAnimationFrame(step);
+            });
+        }
+        
+        // Use Intersection Observer for stats section
+        const statsSection = document.querySelector('.stats-section');
+        if (statsSection) {
+            const statsObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        animateStats();
+                        statsObserver.unobserve(entry.target);
+                    }
+                });
+            }, {threshold: 0.2});
+            
+            statsObserver.observe(statsSection);
+        }
+    });
+</script>
+{% endblock %}

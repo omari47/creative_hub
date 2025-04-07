@@ -1,0 +1,199 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Privacy Policy - Creative Platform{% endblock %}
+
+{% block extra_css %}
+<style>
+    .privacy-hero {
+        background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+                    url('https://source.unsplash.com/random/1920x600/?document,privacy') no-repeat center center/cover;
+        color: #fff;
+        padding: 5rem 0;
+        text-align: center;
+    }
+
+    .privacy-section {
+        padding: 4rem 0;
+    }
+
+    .privacy-content {
+        background-color: var(--card-bg);
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .privacy-content h2 {
+        color: var(--heading-color);
+        margin-top: 2rem;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--accent-color);
+    }
+
+    .privacy-content h2:first-child {
+        margin-top: 0;
+    }
+
+    .privacy-content p, .privacy-content ul {
+        margin-bottom: 1.5rem;
+    }
+
+    .privacy-date {
+        font-style: italic;
+        margin-bottom: 2rem;
+    }
+
+    .privacy-toc {
+        background-color: var(--section-alt-bg);
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+    }
+
+    .privacy-toc ol {
+        margin-bottom: 0;
+    }
+
+    .privacy-toc a {
+        color: var(--link-color);
+        text-decoration: none;
+    }
+
+    .privacy-toc a:hover {
+        color: var(--link-hover-color);
+        text-decoration: underline;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Privacy Policy Hero Section -->
+<section class="privacy-hero">
+    <div class="container">
+        <h1 class="display-4 mb-4">Privacy Policy</h1>
+        <p class="lead">How we collect, use, and protect your information</p>
+    </div>
+</section>
+
+<!-- Privacy Policy Content Section -->
+<section class="privacy-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="privacy-content">
+                    <p class="privacy-date">Last updated: January 1, 2023</p>
+                    
+                    <div class="privacy-toc">
+                        <h4>Table of Contents</h4>
+                        <ol>
+                            <li><a href="#introduction">Introduction</a></li>
+                            <li><a href="#information-collection">Information We Collect</a></li>
+                            <li><a href="#information-use">How We Use Your Information</a></li>
+                            <li><a href="#information-sharing">Information Sharing and Disclosure</a></li>
+                            <li><a href="#cookies">Cookies and Tracking Technologies</a></li>
+                            <li><a href="#data-security">Data Security</a></li>
+                            <li><a href="#user-rights">Your Rights and Choices</a></li>
+                            <li><a href="#children">Children's Privacy</a></li>
+                            <li><a href="#changes">Changes to This Privacy Policy</a></li>
+                            <li><a href="#contact">Contact Us</a></li>
+                        </ol>
+                    </div>
+                    
+                    <h2 id="introduction">1. Introduction</h2>
+                    <p>
+                        Welcome to Creative Platform. We respect your privacy and are committed to protecting your personal data. This privacy policy will inform you about how we look after your personal data when you visit our website and tell you about your privacy rights and how the law protects you.
+                    </p>
+                    <p>
+                        This privacy policy applies to all users of our platform, including registered members, workshop participants, content creators, and visitors.
+                    </p>
+                    
+                    <h2 id="information-collection">2. Information We Collect</h2>
+                    <p>We may collect, use, store, and transfer different kinds of personal data about you, which we have grouped as follows:</p>
+                    <ul>
+                        <li><strong>Identity Data</strong> includes first name, last name, username or similar identifier.</li>
+                        <li><strong>Contact Data</strong> includes email address and telephone numbers.</li>
+                        <li><strong>Profile Data</strong> includes your username and password, purchases or orders made by you, your interests, preferences, feedback, and survey responses.</li>
+                        <li><strong>Usage Data</strong> includes information about how you use our website, products, and services.</li>
+                        <li><strong>Technical Data</strong> includes internet protocol (IP) address, your login data, browser type and version, time zone setting and location, browser plug-in types and versions, operating system and platform, and other technology on the devices you use to access this website.</li>
+                        <li><strong>Marketing and Communications Data</strong> includes your preferences in receiving marketing from us and our third parties and your communication preferences.</li>
+                    </ul>
+                    
+                    <h2 id="information-use">3. How We Use Your Information</h2>
+                    <p>We will only use your personal data when the law allows us to. Most commonly, we will use your personal data in the following circumstances:</p>
+                    <ul>
+                        <li>To register you as a new user.</li>
+                        <li>To process and deliver your orders, including managing payments.</li>
+                        <li>To manage our relationship with you, including notifying you about changes to our services or policies.</li>
+                        <li>To enable you to participate in interactive features of our service.</li>
+                        <li>To administer and protect our business and this website.</li>
+                        <li>To deliver relevant website content and advertisements to you.</li>
+                        <li>To use data analytics to improve our website, products/services, marketing, customer relationships, and experiences.</li>
+                    </ul>
+                    
+                    <h2 id="information-sharing">4. Information Sharing and Disclosure</h2>
+                    <p>We may share your personal information with the following parties:</p>
+                    <ul>
+                        <li><strong>Service Providers:</strong> We may share your information with third-party service providers who perform services on our behalf, such as payment processing, data analysis, email delivery, hosting services, and customer service.</li>
+                        <li><strong>Business Transfers:</strong> If we are involved in a merger, acquisition, or sale of all or a portion of our assets, your information may be transferred as part of that transaction.</li>
+                        <li><strong>Legal Requirements:</strong> We may disclose your information if required to do so by law or in response to valid requests by public authorities.</li>
+                        <li><strong>With Your Consent:</strong> We may share your information with third parties when we have your consent to do so.</li>
+                    </ul>
+                    
+                    <h2 id="cookies">5. Cookies and Tracking Technologies</h2>
+                    <p>
+                        We use cookies and similar tracking technologies to track the activity on our Service and hold certain information. Cookies are files with a small amount of data which may include an anonymous unique identifier.
+                    </p>
+                    <p>
+                        You can instruct your browser to refuse all cookies or to indicate when a cookie is being sent. However, if you do not accept cookies, you may not be able to use some portions of our Service.
+                    </p>
+                    
+                    <h2 id="data-security">6. Data Security</h2>
+                    <p>
+                        We have implemented appropriate security measures to prevent your personal data from being accidentally lost, used, or accessed in an unauthorized way, altered, or disclosed. In addition, we limit access to your personal data to those employees, agents, contractors, and other third parties who have a business need to know.
+                    </p>
+                    <p>
+                        We have put in place procedures to deal with any suspected personal data breach and will notify you and any applicable regulator of a breach where we are legally required to do so.
+                    </p>
+                    
+                    <h2 id="user-rights">7. Your Rights and Choices</h2>
+                    <p>You have the right to:</p>
+                    <ul>
+                        <li>Access your personal data.</li>
+                        <li>Correct any mistakes in your personal data.</li>
+                        <li>Request the deletion of your personal data.</li>
+                        <li>Object to our use of your personal data.</li>
+                        <li>Request that we restrict our use of your personal data.</li>
+                        <li>Request a copy of your personal data in a structured, commonly used, and machine-readable format.</li>
+                        <li>Withdraw your consent at any time where we are relying on consent to process your personal data.</li>
+                    </ul>
+                    
+                    <h2 id="children">8. Children's Privacy</h2>
+                    <p>
+                        Our Service is not intended for use by children under the age of 16. We do not knowingly collect personally identifiable information from children under 16. If you are a parent or guardian and you are aware that your child has provided us with personal data, please contact us so that we can take necessary actions.
+                    </p>
+                    
+                    <h2 id="changes">9. Changes to This Privacy Policy</h2>
+                    <p>
+                        We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "last updated" date at the top of this Privacy Policy.
+                    </p>
+                    <p>
+                        You are advised to review this Privacy Policy periodically for any changes. Changes to this Privacy Policy are effective when they are posted on this page.
+                    </p>
+                    
+                    <h2 id="contact">10. Contact Us</h2>
+                    <p>
+                        If you have any questions about this Privacy Policy, please contact us:
+                    </p>
+                    <ul>
+                        <li>By email: privacy@creativeplatform.com</li>
+                        <li>By visiting the contact page on our website: <a href="{% url 'landing:contact' %}">Contact Us</a></li>
+                        <li>By mail: 123 Creative Avenue, Inspiration City, IC 10101</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

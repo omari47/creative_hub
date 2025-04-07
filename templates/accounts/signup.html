@@ -1,0 +1,352 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Sign Up - Creative Platform{% endblock %}
+
+{% block extra_css %}
+<style>
+    .signup-section {
+        padding: 5rem 0;
+        min-height: calc(100vh - 200px);
+        display: flex;
+        align-items: center;
+    }
+
+    .signup-container {
+        max-width: 500px;
+        width: 100%;
+        margin: 0 auto;
+        background-color: var(--card-bg);
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        padding: 2.5rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .signup-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .signup-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .signup-subtitle {
+        color: var(--text-color-muted);
+        font-size: 1rem;
+    }
+
+    .signup-form .form-control {
+        background-color: var(--input-bg);
+        border: 1px solid var(--border-color);
+        color: var(--text-color);
+        border-radius: 6px;
+        padding: 12px 15px;
+        height: auto;
+    }
+
+    .signup-form .form-control:focus {
+        box-shadow: 0 0 0 0.2rem rgba(var(--accent-color-rgb), 0.25);
+        border-color: var(--accent-color);
+    }
+
+    .signup-form .btn-primary {
+        padding: 12px 15px;
+        font-weight: 600;
+        border-radius: 6px;
+        margin-top: 1rem;
+    }
+
+    .signup-divider {
+        text-align: center;
+        margin: 1.5rem 0;
+        position: relative;
+    }
+
+    .signup-divider::before, .signup-divider::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        width: 45%;
+        height: 1px;
+        background-color: var(--border-color);
+    }
+
+    .signup-divider::before {
+        left: 0;
+    }
+
+    .signup-divider::after {
+        right: 0;
+    }
+
+    .social-signup {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .social-signup-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: var(--section-alt-bg);
+        color: var(--text-color);
+        border: 1px solid var(--border-color);
+        transition: all 0.3s ease;
+    }
+
+    .social-signup-btn:hover {
+        background-color: var(--accent-color);
+        color: #fff;
+    }
+
+    .signup-footer {
+        text-align: center;
+        margin-top: 1.5rem;
+        font-size: 0.9rem;
+    }
+
+    .signup-footer a {
+        color: var(--accent-color);
+        text-decoration: none;
+    }
+
+    .signup-footer a:hover {
+        text-decoration: underline;
+    }
+
+    .form-check-input:checked {
+        background-color: var(--accent-color);
+        border-color: var(--accent-color);
+    }
+
+    .alert {
+        border-radius: 6px;
+    }
+
+    .form-error {
+        color: #dc3545;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+
+    /* Password strength meter */
+    .password-strength-meter {
+        height: 5px;
+        width: 100%;
+        background-color: #ddd;
+        border-radius: 3px;
+        margin-top: 10px;
+        position: relative;
+    }
+
+    .password-strength-meter-fill {
+        height: 100%;
+        border-radius: 3px;
+        transition: width 0.3s ease, background-color 0.3s ease;
+    }
+
+    .password-strength-text {
+        font-size: 0.75rem;
+        margin-top: 5px;
+    }
+
+    /* Decorative background elements */
+    .signup-bg-shape {
+        position: absolute;
+        background: linear-gradient(45deg, var(--accent-color), var(--primary-color));
+        opacity: 0.05;
+        border-radius: 50%;
+    }
+
+    .shape1 {
+        width: 150px;
+        height: 150px;
+        top: -75px;
+        left: -75px;
+    }
+
+    .shape2 {
+        width: 100px;
+        height: 100px;
+        bottom: -50px;
+        right: -50px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="signup-section">
+    <div class="container">
+        <div class="signup-container">
+            <!-- Decorative shapes -->
+            <div class="signup-bg-shape shape1"></div>
+            <div class="signup-bg-shape shape2"></div>
+            
+            <div class="signup-header">
+                <h1 class="signup-title">Create Account</h1>
+                <p class="signup-subtitle">Join our creative community today</p>
+            </div>
+            
+            {% if form.errors %}
+            <div class="alert alert-danger" role="alert">
+                <strong>Error:</strong> Please correct the errors below.
+            </div>
+            {% endif %}
+            
+            <form method="post" action="{% url 'account_signup' %}" class="signup-form">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label for="id_username" class="form-label">Username</label>
+                    <input type="text" name="username" class="form-control" id="id_username" required>
+                    {% if form.username.errors %}
+                    <div class="form-error">{{ form.username.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-3">
+                    <label for="id_email" class="form-label">Email</label>
+                    <input type="email" name="email" class="form-control" id="id_email" required>
+                    {% if form.email.errors %}
+                    <div class="form-error">{{ form.email.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-3">
+                    <label for="id_password1" class="form-label">Password</label>
+                    <input type="password" name="password1" class="form-control" id="id_password1" required>
+                    {% if form.password1.errors %}
+                    <div class="form-error">{{ form.password1.errors }}</div>
+                    {% endif %}
+                    
+                    <!-- Password strength meter -->
+                    <div class="password-strength-meter">
+                        <div class="password-strength-meter-fill" id="passwordStrengthFill"></div>
+                    </div>
+                    <div class="password-strength-text" id="passwordStrengthText"></div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="id_password2" class="form-label">Confirm Password</label>
+                    <input type="password" name="password2" class="form-control" id="id_password2" required>
+                    {% if form.password2.errors %}
+                    <div class="form-error">{{ form.password2.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-3 form-check">
+                    <input type="checkbox" name="terms" class="form-check-input" id="id_terms" required>
+                    <label class="form-check-label" for="id_terms">
+                        I agree to the <a href="{% url 'landing:terms_of_service' %}" target="_blank">Terms of Service</a> and <a href="{% url 'landing:privacy_policy' %}" target="_blank">Privacy Policy</a>
+                    </label>
+                </div>
+                
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary">Sign Up</button>
+                </div>
+                
+                <!-- If next parameter is provided, include it -->
+                {% if redirect_field_value %}
+                <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+                {% endif %}
+            </form>
+            
+            <div class="signup-divider">or</div>
+            
+            <div class="social-signup">
+                <a href="#" class="social-signup-btn">
+                    <i class="fab fa-google"></i>
+                </a>
+                <a href="#" class="social-signup-btn">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+                <a href="#" class="social-signup-btn">
+                    <i class="fab fa-twitter"></i>
+                </a>
+            </div>
+            
+            <div class="signup-footer">
+                <p>Already have an account? <a href="{% url 'account_login' %}">Log in</a></p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Simple animation for the signup container
+        gsap.from('.signup-container', {
+            opacity: 0,
+            y: 30,
+            duration: 0.8,
+            ease: 'power3.out'
+        });
+        
+        // Password strength meter
+        const passwordInput = document.getElementById('id_password1');
+        const strengthFill = document.getElementById('passwordStrengthFill');
+        const strengthText = document.getElementById('passwordStrengthText');
+        
+        passwordInput.addEventListener('input', function() {
+            const password = this.value;
+            const strength = calculatePasswordStrength(password);
+            updatePasswordStrengthMeter(strength);
+        });
+        
+        function calculatePasswordStrength(password) {
+            if (!password) return 0;
+            
+            let strength = 0;
+            
+            // Length check
+            if (password.length >= 8) strength += 25;
+            
+            // Contains lowercase letters
+            if (/[a-z]/.test(password)) strength += 25;
+            
+            // Contains uppercase letters
+            if (/[A-Z]/.test(password)) strength += 25;
+            
+            // Contains numbers or special characters
+            if (/[0-9!@#$%^&*]/.test(password)) strength += 25;
+            
+            return strength;
+        }
+        
+        function updatePasswordStrengthMeter(strength) {
+            strengthFill.style.width = strength + '%';
+            
+            if (strength < 25) {
+                strengthFill.style.backgroundColor = '#dc3545'; // Red
+                strengthText.textContent = 'Weak';
+                strengthText.style.color = '#dc3545';
+            } else if (strength < 50) {
+                strengthFill.style.backgroundColor = '#ffc107'; // Yellow
+                strengthText.textContent = 'Fair';
+                strengthText.style.color = '#ffc107';
+            } else if (strength < 75) {
+                strengthFill.style.backgroundColor = '#fd7e14'; // Orange
+                strengthText.textContent = 'Good';
+                strengthText.style.color = '#fd7e14';
+            } else {
+                strengthFill.style.backgroundColor = '#28a745'; // Green
+                strengthText.textContent = 'Strong';
+                strengthText.style.color = '#28a745';
+            }
+        }
+    });
+</script>
+{% endblock %}

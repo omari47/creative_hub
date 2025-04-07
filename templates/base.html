@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Creative Platform{% endblock %}</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Feather Icons -->
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- GSAP Animation Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/main.css">
+    <link rel="stylesheet" href="/static/css/animations.css">
+    
+    <!-- Theme CSS - conditionally load based on user preference -->
+    {% if user_theme %}
+    <link rel="stylesheet" href="/static/css/themes/{{ user_theme.css_file }}">
+    {% else %}
+    <link rel="stylesheet" href="/static/css/themes/default.css">
+    {% endif %}
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Header with Navigation -->
+    <header>
+        <nav class="navbar">
+            <div class="container navbar-container">
+                <!-- Left: Logo/Brand -->
+                <a class="navbar-brand" href="{% url 'landing:home' %}">
+                    <span class="brand-text">Creative Platform</span>
+                </a>
+                
+                <!-- Center: Main Navigation Links -->
+                <div class="desktop-nav">
+                    <ul class="navbar-nav">
+                        <!-- Add Home link for smooth scrolling -->
+                        <li class="nav-item">
+                            <a class="nav-link nav-morph {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'landing:home' %}">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-morph {% if request.resolver_match.url_name == 'gallery' %}active{% endif %}" href="{% url 'media_gallery:gallery' %}">Gallery</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-morph {% if request.resolver_match.url_name == 'list' %}active{% endif %}" href="{% url 'workshops:list' %}">Workshops</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-morph {% if request.resolver_match.url_name == 'featured_movies' %}active{% endif %}" href="{% url 'payments:featured_movies' %}">Movies</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-morph {% if request.resolver_match.url_name == 'about' %}active{% endif %}" href="{% url 'landing:about' %}">About</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-morph {% if request.resolver_match.url_name == 'contact' %}active{% endif %}" href="{% url 'landing:contact' %}">Contact</a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- Right: Auth Buttons -->
+                <div class="navbar-auth">
+                    {% if user.is_authenticated %}
+                    <div class="dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                            <i data-feather="user"></i> {{ user.username }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{% url 'accounts:profile' %}">My Profile</a></li>
+                            <li><a class="dropdown-item" href="{% url 'accounts:purchase_history' %}">Purchases</a></li>
+                            <li><a class="dropdown-item" href="{% url 'workshops:my_workshops' %}">My Workshops</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'account_logout' %}">Logout</a></li>
+                        </ul>
+                    </div>
+                    {% else %}
+                    <button type="button" class="btn-login" id="loginModalBtn">Login</button>
+                    <button type="button" class="btn-signup" id="signupModalBtn">Sign Up</button>
+                    {% endif %}
+                </div>
+                
+                <!-- Mobile menu toggle -->
+                <div class="mobile-toggle">
+                    <button class="btn nav-toggle" type="button" id="mobileMenuToggle" aria-label="Toggle navigation" onclick="toggleMobileMenu()">
+                        <i data-feather="menu" class="icon-menu"></i>
+                        <i data-feather="x" class="icon-close d-none"></i>
+                    </button>
+                </div>
+            </div>
+        </nav>
+        
+        <!-- Mobile Menu (Horizontal Slide Down) -->
+        <div class="mobile-nav-container" id="mobileNavContainer">
+            <ul class="mobile-nav">
+                <!-- Added Home link to match desktop navigation -->
+                <li class="mobile-nav-item">
+                    <a class="mobile-nav-link morphing-btn {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'landing:home' %}">Home</a>
+                </li>
+                <li class="mobile-nav-item">
+                    <a class="mobile-nav-link morphing-btn {% if request.resolver_match.url_name == 'gallery' %}active{% endif %}" href="{% url 'media_gallery:gallery' %}">Gallery</a>
+                </li>
+                <li class="mobile-nav-item">
+                    <a class="mobile-nav-link morphing-btn {% if request.resolver_match.url_name == 'list' %}active{% endif %}" href="{% url 'workshops:list' %}">Workshops</a>
+                </li>
+                <li class="mobile-nav-item">
+                    <a class="mobile-nav-link morphing-btn {% if request.resolver_match.url_name == 'featured_movies' %}active{% endif %}" href="{% url 'payments:featured_movies' %}">Movies</a>
+                </li>
+                <li class="mobile-nav-item">
+                    <a class="mobile-nav-link morphing-btn {% if request.resolver_match.url_name == 'about' %}active{% endif %}" href="{% url 'landing:about' %}">About</a>
+                </li>
+                <li class="mobile-nav-item">
+                    <a class="mobile-nav-link morphing-btn {% if request.resolver_match.url_name == 'contact' %}active{% endif %}" href="{% url 'landing:contact' %}">Contact</a>
+                </li>
+                {% if user.is_authenticated %}
+                <li class="mobile-nav-item">
+                    <a class="mobile-nav-link" href="{% url 'accounts:profile' %}">Profile</a>
+                </li>
+                <li class="mobile-nav-item">
+                    <a class="mobile-nav-link" href="{% url 'accounts:purchase_history' %}">Purchases</a>
+                </li>
+                <li class="mobile-nav-item">
+                    <a class="mobile-nav-link" href="{% url 'workshops:my_workshops' %}">My Workshops</a>
+                </li>
+                <li class="mobile-nav-item">
+                    <a class="mobile-nav-link" href="{% url 'account_logout' %}">Logout</a>
+                </li>
+                {% else %}
+                <li class="mobile-nav-item">
+                    <button class="mobile-nav-link" id="mobileLoginBtn">Login</button>
+                </li>
+                <li class="mobile-nav-item">
+                    <button class="mobile-nav-link highlight" id="mobileSignupBtn">Sign Up</button>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+        
+        <!-- Login Modal -->
+        <div class="auth-modal" id="loginModal">
+            <div class="modal-content">
+                <button type="button" class="modal-close" id="closeLoginModal">
+                    <i data-feather="x"></i>
+                </button>
+                <div class="modal-header">
+                    <h2 class="modal-title">Welcome Back</h2>
+                    <p class="modal-subtitle">Sign in to your account</p>
+                </div>
+                <form class="auth-form" method="post" action="{% url 'account_login' %}">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <input type="text" class="form-input" id="login-username" name="login" placeholder=" " required>
+                        <label for="login-username" class="form-label">Username or Email</label>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" class="form-input" id="login-password" name="password" placeholder=" " required>
+                        <label for="login-password" class="form-label">Password</label>
+                    </div>
+                    <div class="auth-options">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="rememberMe" name="remember">
+                            <label class="form-check-label" for="rememberMe">Remember me</label>
+                        </div>
+                        <a href="{% url 'account_reset_password' %}" class="forgot-password">Forgot password?</a>
+                    </div>
+                    <button type="submit" class="auth-submit">Sign In</button>
+                </form>
+                <div class="social-auth">
+                    <div class="social-auth-title">Or sign in with</div>
+                    <div class="social-buttons">
+                        <button type="button" class="social-btn google">
+                            <i data-feather="mail"></i>
+                        </button>
+                        <button type="button" class="social-btn facebook">
+                            <i data-feather="facebook"></i>
+                        </button>
+                        <button type="button" class="social-btn twitter">
+                            <i data-feather="twitter"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="auth-footer mt-4 text-center">
+                    <p>Don't have an account? <button type="button" class="auth-switch" id="switchToSignup">Sign up</button></p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Signup Modal -->
+        <div class="auth-modal" id="signupModal">
+            <div class="modal-content">
+                <button type="button" class="modal-close" id="closeSignupModal">
+                    <i data-feather="x"></i>
+                </button>
+                <div class="modal-header">
+                    <h2 class="modal-title">Create Account</h2>
+                    <p class="modal-subtitle">Join our creative community</p>
+                </div>
+                <form class="auth-form" method="post" action="{% url 'account_signup' %}">
+                    {% csrf_token %}
+                    <div class="form-group mb-3">
+                        <input type="text" class="form-input" id="signup-username" name="username" placeholder=" " required>
+                        <label for="signup-username" class="form-label">Username</label>
+                    </div>
+                    <div class="form-group mb-3">
+                        <input type="email" class="form-input" id="signup-email" name="email" placeholder=" " required>
+                        <label for="signup-email" class="form-label">Email Address</label>
+                    </div>
+                    <div class="form-group mb-3">
+                        <input type="password" class="form-input" id="signup-password1" name="password1" placeholder=" " required>
+                        <label for="signup-password1" class="form-label">Password</label>
+                    </div>
+                    <div class="form-group mb-3">
+                        <input type="password" class="form-input" id="signup-password2" name="password2" placeholder=" " required>
+                        <label for="signup-password2" class="form-label">Confirm Password</label>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input type="checkbox" class="form-check-input" id="termsCheck" required>
+                        <label class="form-check-label" for="termsCheck">
+                            I agree to the <a href="{% url 'landing:terms_of_service' %}">Terms of Service</a> and <a href="{% url 'landing:privacy_policy' %}">Privacy Policy</a>
+                        </label>
+                    </div>
+                    <button type="submit" class="auth-submit">Create Account</button>
+                </form>
+                <div class="social-auth">
+                    <div class="social-auth-title">Or sign up with</div>
+                    <div class="social-buttons">
+                        <button type="button" class="social-btn google">
+                            <i data-feather="mail"></i>
+                        </button>
+                        <button type="button" class="social-btn facebook">
+                            <i data-feather="facebook"></i>
+                        </button>
+                        <button type="button" class="social-btn twitter">
+                            <i data-feather="twitter"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="auth-footer mt-4 text-center">
+                    <p>Already have an account? <button type="button" class="auth-switch" id="switchToLogin">Sign in</button></p>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Messages -->
+    {% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}" role="alert">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    <!-- Main Content -->
+    <main id="main-content">
+        {% block content %}{% endblock %}
+    </main>
+    
+    <!-- M-Pesa Payment Modal -->
+    <div class="mpesa-payment-modal">
+        <div class="mpesa-modal-content">
+            <div class="mpesa-close-btn">
+                <i data-feather="x"></i>
+            </div>
+            
+            <div class="mpesa-header">
+                <h4 class="mpesa-title">Pay with M-Pesa</h4>
+                <img class="mpesa-logo" src="/static/img/mpesa-logo.png" alt="M-Pesa Logo">
+            </div>
+            
+            <div class="mpesa-movie-info">
+                <img class="mpesa-movie-thumb" src="" alt="Movie Thumbnail">
+                <div>
+                    <h5 class="mpesa-movie-title">Movie Title</h5>
+                    <div class="mpesa-movie-price">KES 0.00</div>
+                </div>
+            </div>
+            
+            <form class="mpesa-payment-form">
+                <div class="mpesa-form-group">
+                    <label class="mpesa-label" for="phone_number">Enter M-Pesa Phone Number</label>
+                    <input type="tel" class="mpesa-input" name="phone_number" placeholder="e.g., 254712345678" required>
+                </div>
+                
+                <button type="submit" class="mpesa-submit-btn">Pay Now</button>
+                
+                <div class="mpesa-instructions">
+                    <p>You will receive an M-Pesa prompt on your phone</p>
+                </div>
+            </form>
+            
+            <div class="mpesa-loading">
+                <div class="mpesa-spinner"></div>
+                <p>Processing your payment...</p>
+                <p class="small">Please check your phone for the M-Pesa prompt</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h4>Creative Platform</h4>
+                    <p>A Netflix-style platform for creatives with media portfolios, premium content, and workshop registration.</p>
+                    <div class="footer-social mt-3">
+                        <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-column">
+                    <h4>Quick Links</h4>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="{% url 'landing:home' %}">Home</a></li>
+                        <li class="footer-link"><a href="{% url 'media_gallery:gallery' %}">Gallery</a></li>
+                        <li class="footer-link"><a href="{% url 'workshops:list' %}">Workshops</a></li>
+                        <li class="footer-link"><a href="{% url 'payments:featured_movies' %}">Movies</a></li>
+                        <li class="footer-link"><a href="{% url 'landing:about' %}">About Us</a></li>
+                        <li class="footer-link"><a href="{% url 'landing:contact' %}">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h4>Legal</h4>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="{% url 'landing:privacy_policy' %}">Privacy Policy</a></li>
+                        <li class="footer-link"><a href="{% url 'landing:terms_of_service' %}">Terms of Service</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h4>Contact Us</h4>
+                    <ul class="footer-links">
+                        <li class="footer-link"><i class="fas fa-envelope me-2"></i> info@creativeplatform.com</li>
+                        <li class="footer-link"><i class="fas fa-phone me-2"></i> +1 (800) 123-4567</li>
+                        <li class="footer-link"><i class="fas fa-map-marker-alt me-2"></i> 123 Creative Ave, Studio City</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; {% now "Y" %} Creative Platform. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Initialize Feather Icons -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            feather.replace();
+        });
+    </script>
+    
+    <!-- Custom JavaScript -->
+    <script src="/static/js/main.js"></script>
+    <script src="/static/js/animations.js"></script>
+    
+    <!-- Inline script to ensure mobile navigation works properly -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+            const mobileNavContainer = document.getElementById('mobileNavContainer');
+            const mobileNavItems = document.querySelectorAll('.mobile-nav-item');
+            const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
+            const menuIcon = document.querySelector('.icon-menu');
+            const closeIcon = document.querySelector('.icon-close');
+            
+            if (mobileMenuToggle && mobileNavContainer) {
+                // Make sure mobile nav items are visible
+                mobileNavItems.forEach(item => {
+                    item.style.display = 'block';
+                    item.style.opacity = '1';
+                    item.style.visibility = 'visible';
+                });
+                
+                mobileNavLinks.forEach(link => {
+                    link.style.display = 'block';
+                    link.style.opacity = '1';
+                    link.style.visibility = 'visible';
+                });
+                
+                // Direct event handler for mobile menu toggle
+                mobileMenuToggle.onclick = function() {
+                    mobileNavContainer.classList.toggle('active');
+                    if (menuIcon) menuIcon.classList.toggle('d-none');
+                    if (closeIcon) closeIcon.classList.toggle('d-none');
+                    
+                    if (mobileNavContainer.classList.contains('active')) {
+                        document.body.style.overflow = 'hidden';
+                    } else {
+                        document.body.style.overflow = '';
+                    }
+                };
+            }
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

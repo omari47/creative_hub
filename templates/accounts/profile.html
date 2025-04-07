@@ -1,0 +1,558 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Profile - Creative Platform{% endblock %}
+
+{% block extra_css %}
+<style>
+    .profile-header {
+        background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+                  url('https://source.unsplash.com/random/1920x800/?creative,profile');
+        background-position: center;
+        background-size: cover;
+        padding: 6rem 0 4rem;
+        color: #fff;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .profile-avatar-container {
+        position: relative;
+        margin-bottom: 1.5rem;
+    }
+
+    .profile-avatar {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        border: 5px solid rgba(255, 255, 255, 0.2);
+        object-fit: cover;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .edit-avatar-btn {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        background: var(--accent-color);
+        color: white;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+    }
+
+    .edit-avatar-btn:hover {
+        transform: scale(1.1);
+        background-color: var(--primary-color);
+    }
+
+    .profile-info {
+        margin-bottom: 2rem;
+    }
+
+    .profile-username {
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .profile-email {
+        font-size: 1.1rem;
+        opacity: 0.8;
+        margin-bottom: 1rem;
+    }
+
+    .profile-bio {
+        max-width: 700px;
+        line-height: 1.7;
+    }
+
+    .profile-tabs {
+        background-color: var(--card-bg);
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        margin-top: -50px;
+        position: relative;
+        z-index: 2;
+    }
+
+    .profile-tabs .nav-link {
+        font-weight: 600;
+        color: var(--text-color);
+        padding: 1rem 1.5rem;
+        border-radius: 5px;
+        margin-right: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .profile-tabs .nav-link.active {
+        background-color: var(--accent-color);
+        color: white;
+    }
+
+    .tab-content {
+        padding-top: 2rem;
+    }
+
+    .recent-item {
+        background-color: var(--card-bg);
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .recent-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .recent-item-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+    }
+
+    .recent-item-title {
+        font-weight: 600;
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .recent-item-date {
+        font-size: 0.9rem;
+        color: var(--text-color-muted);
+    }
+
+    .theme-selector {
+        margin-top: 2rem;
+    }
+
+    .theme-options {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .theme-option {
+        width: 100px;
+        cursor: pointer;
+        text-align: center;
+        transition: transform 0.2s ease;
+    }
+
+    .theme-option:hover {
+        transform: scale(1.05);
+    }
+
+    .theme-preview {
+        height: 60px;
+        border-radius: 8px;
+        margin-bottom: 0.5rem;
+        border: 2px solid transparent;
+        overflow: hidden;
+    }
+
+    .theme-option.active .theme-preview {
+        border-color: var(--accent-color);
+    }
+
+    .theme-name {
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    .theme-default {
+        background: linear-gradient(to right, #4A6FFF, #7E57C2);
+    }
+
+    .theme-dark {
+        background: linear-gradient(to right, #212529, #343a40);
+    }
+
+    .theme-light {
+        background: linear-gradient(to right, #f8f9fa, #e9ecef);
+    }
+
+    .theme-vibrant {
+        background: linear-gradient(to right, #FF4757, #FF6B81);
+    }
+
+    .no-items-message {
+        background-color: var(--card-bg);
+        border-radius: 10px;
+        padding: 2rem;
+        text-align: center;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+    }
+
+    .no-items-icon {
+        font-size: 3rem;
+        color: var(--text-color-muted);
+        margin-bottom: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Profile Header -->
+<section class="profile-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3 text-center text-md-start">
+                <div class="profile-avatar-container">
+                    {% if profile.avatar %}
+                    <img src="{{ profile.avatar.url }}" alt="{{ request.user.username }}" class="profile-avatar">
+                    {% else %}
+                    <img src="https://ui-avatars.com/api/?name={{ request.user.username }}&background=random&size=150" alt="{{ request.user.username }}" class="profile-avatar">
+                    {% endif %}
+                    <a href="{% url 'accounts:edit_profile' %}" class="edit-avatar-btn">
+                        <i class="fas fa-camera"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-9">
+                <div class="profile-info">
+                    <h1 class="profile-username">{{ request.user.username }}</h1>
+                    <p class="profile-email">{{ request.user.email }}</p>
+                    {% if profile.bio %}
+                    <div class="profile-bio">
+                        {{ profile.bio }}
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="profile-actions">
+                    <a href="{% url 'accounts:edit_profile' %}" class="btn btn-outline-light me-2">
+                        <i class="fas fa-edit me-2"></i>Edit Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Profile Content -->
+<section class="profile-content py-5">
+    <div class="container">
+        <!-- Profile Tabs -->
+        <div class="profile-tabs">
+            <ul class="nav nav-pills mb-4" id="profileTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="dashboard-tab" data-bs-toggle="tab" data-bs-target="#dashboard" type="button" role="tab" aria-controls="dashboard" aria-selected="true">Dashboard</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="purchases-tab" data-bs-toggle="tab" data-bs-target="#purchases" type="button" role="tab" aria-controls="purchases" aria-selected="false">Purchases</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="workshops-tab" data-bs-toggle="tab" data-bs-target="#workshops" type="button" role="tab" aria-controls="workshops" aria-selected="false">Workshops</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="themes-tab" data-bs-toggle="tab" data-bs-target="#themes" type="button" role="tab" aria-controls="themes" aria-selected="false">Themes</button>
+                </li>
+            </ul>
+            
+            <div class="tab-content" id="profileTabsContent">
+                <!-- Dashboard Tab -->
+                <div class="tab-pane fade show active" id="dashboard" role="tabpanel" aria-labelledby="dashboard-tab">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h3 class="mb-4">Recent Purchases</h3>
+                            {% if recent_purchases %}
+                                {% for purchase in recent_purchases %}
+                                <div class="recent-item">
+                                    <div class="recent-item-header">
+                                        <h4 class="recent-item-title">
+                                            {% if purchase.movie %}
+                                                {{ purchase.movie.title }}
+                                            {% elif purchase.workshop_registration %}
+                                                {{ purchase.workshop_registration.workshop.title }}
+                                            {% endif %}
+                                        </h4>
+                                        <span class="badge {% if purchase.payment_status == 'completed' %}bg-success{% elif purchase.payment_status == 'pending' %}bg-warning{% else %}bg-danger{% endif %}">
+                                            {{ purchase.payment_status|title }}
+                                        </span>
+                                    </div>
+                                    <div class="recent-item-date">
+                                        <i class="far fa-clock me-1"></i> {{ purchase.purchased_at|date:"F j, Y" }}
+                                    </div>
+                                    <div class="mt-3">
+                                        <strong>Amount:</strong> ${{ purchase.amount }}
+                                    </div>
+                                    <div class="mt-2">
+                                        {% if purchase.movie %}
+                                            <a href="{% url 'payments:movie_detail' purchase.movie.pk %}" class="btn btn-sm btn-primary">View Movie</a>
+                                        {% elif purchase.workshop_registration %}
+                                            <a href="{% url 'workshops:detail' purchase.workshop_registration.workshop.pk %}" class="btn btn-sm btn-primary">View Workshop</a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% endfor %}
+                                <div class="text-center mt-3">
+                                    <a href="{% url 'accounts:purchase_history' %}" class="btn btn-outline-primary">View All Purchases</a>
+                                </div>
+                            {% else %}
+                                <div class="no-items-message">
+                                    <div class="no-items-icon">
+                                        <i class="far fa-credit-card"></i>
+                                    </div>
+                                    <h5>No purchases yet</h5>
+                                    <p>You haven't made any purchases. Explore our featured movies or workshops!</p>
+                                    <div class="mt-3">
+                                        <a href="{% url 'payments:featured_movies' %}" class="btn btn-primary me-2">Explore Movies</a>
+                                        <a href="{% url 'workshops:list' %}" class="btn btn-outline-primary">Explore Workshops</a>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <h3 class="mb-4">Upcoming Workshops</h3>
+                            {% if recent_workshops %}
+                                {% for registration in recent_workshops %}
+                                <div class="recent-item">
+                                    <div class="recent-item-header">
+                                        <h4 class="recent-item-title">{{ registration.workshop.title }}</h4>
+                                        <span class="badge {% if registration.status == 'confirmed' %}bg-success{% elif registration.status == 'pending' %}bg-warning{% else %}bg-danger{% endif %}">
+                                            {{ registration.status|title }}
+                                        </span>
+                                    </div>
+                                    <div class="recent-item-date">
+                                        <i class="far fa-calendar-alt me-1"></i> {{ registration.workshop.date|date:"F j, Y - g:i A" }}
+                                    </div>
+                                    <div class="mt-2">
+                                        <strong>Location:</strong> {{ registration.workshop.location }}
+                                    </div>
+                                    <div class="mt-2">
+                                        <strong>Payment:</strong> 
+                                        <span class="{% if registration.payment_status == 'paid' %}text-success{% elif registration.payment_status == 'pending' %}text-warning{% else %}text-danger{% endif %}">
+                                            {{ registration.payment_status|title }}
+                                        </span>
+                                    </div>
+                                    <div class="mt-3">
+                                        <a href="{% url 'workshops:detail' registration.workshop.pk %}" class="btn btn-sm btn-primary">View Workshop</a>
+                                        {% if registration.status != 'cancelled' and not registration.workshop.is_past %}
+                                            <a href="{% url 'workshops:cancel_registration' registration.pk %}" class="btn btn-sm btn-outline-danger">Cancel Registration</a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% endfor %}
+                                <div class="text-center mt-3">
+                                    <a href="{% url 'accounts:workshop_history' %}" class="btn btn-outline-primary">View All Workshops</a>
+                                </div>
+                            {% else %}
+                                <div class="no-items-message">
+                                    <div class="no-items-icon">
+                                        <i class="far fa-calendar-check"></i>
+                                    </div>
+                                    <h5>No workshop registrations</h5>
+                                    <p>You're not registered for any workshops. Explore our workshop offerings!</p>
+                                    <div class="mt-3">
+                                        <a href="{% url 'workshops:list' %}" class="btn btn-primary">Browse Workshops</a>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Purchases Tab -->
+                <div class="tab-pane fade" id="purchases" role="tabpanel" aria-labelledby="purchases-tab">
+                    <h3 class="mb-4">Your Purchases</h3>
+                    {% if recent_purchases %}
+                        <div class="row">
+                            {% for purchase in recent_purchases %}
+                            <div class="col-md-6">
+                                <div class="recent-item">
+                                    <div class="recent-item-header">
+                                        <h4 class="recent-item-title">
+                                            {% if purchase.movie %}
+                                                {{ purchase.movie.title }}
+                                            {% elif purchase.workshop_registration %}
+                                                {{ purchase.workshop_registration.workshop.title }}
+                                            {% endif %}
+                                        </h4>
+                                        <span class="badge {% if purchase.payment_status == 'completed' %}bg-success{% elif purchase.payment_status == 'pending' %}bg-warning{% else %}bg-danger{% endif %}">
+                                            {{ purchase.payment_status|title }}
+                                        </span>
+                                    </div>
+                                    <div class="recent-item-date">
+                                        <i class="far fa-clock me-1"></i> {{ purchase.purchased_at|date:"F j, Y" }}
+                                    </div>
+                                    <div class="mt-3">
+                                        <strong>Amount:</strong> ${{ purchase.amount }}
+                                    </div>
+                                    <div class="mt-3">
+                                        <strong>Payment ID:</strong> {{ purchase.payment_id|truncatechars:15 }}
+                                    </div>
+                                    <div class="mt-2">
+                                        {% if purchase.movie %}
+                                            <a href="{% url 'payments:movie_detail' purchase.movie.pk %}" class="btn btn-sm btn-primary">View Movie</a>
+                                        {% elif purchase.workshop_registration %}
+                                            <a href="{% url 'workshops:detail' purchase.workshop_registration.workshop.pk %}" class="btn btn-sm btn-primary">View Workshop</a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="text-center mt-3">
+                            <a href="{% url 'accounts:purchase_history' %}" class="btn btn-primary">View Complete Purchase History</a>
+                        </div>
+                    {% else %}
+                        <div class="no-items-message">
+                            <div class="no-items-icon">
+                                <i class="far fa-credit-card"></i>
+                            </div>
+                            <h5>No purchases yet</h5>
+                            <p>You haven't made any purchases. Explore our featured movies or workshops!</p>
+                            <div class="mt-3">
+                                <a href="{% url 'payments:featured_movies' %}" class="btn btn-primary me-2">Explore Movies</a>
+                                <a href="{% url 'workshops:list' %}" class="btn btn-outline-primary">Explore Workshops</a>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Workshops Tab -->
+                <div class="tab-pane fade" id="workshops" role="tabpanel" aria-labelledby="workshops-tab">
+                    <h3 class="mb-4">Your Workshop Registrations</h3>
+                    {% if recent_workshops %}
+                        <div class="row">
+                            {% for registration in recent_workshops %}
+                            <div class="col-md-6">
+                                <div class="recent-item">
+                                    <div class="recent-item-header">
+                                        <h4 class="recent-item-title">{{ registration.workshop.title }}</h4>
+                                        <span class="badge {% if registration.status == 'confirmed' %}bg-success{% elif registration.status == 'pending' %}bg-warning{% else %}bg-danger{% endif %}">
+                                            {{ registration.status|title }}
+                                        </span>
+                                    </div>
+                                    <div class="recent-item-date">
+                                        <i class="far fa-calendar-alt me-1"></i> {{ registration.workshop.date|date:"F j, Y - g:i A" }}
+                                    </div>
+                                    <div class="mt-2">
+                                        <strong>Location:</strong> {{ registration.workshop.location }}
+                                    </div>
+                                    <div class="mt-2">
+                                        <strong>Instructor:</strong> {{ registration.workshop.instructor }}
+                                    </div>
+                                    <div class="mt-2">
+                                        <strong>Duration:</strong> {{ registration.workshop.duration }} minutes
+                                    </div>
+                                    <div class="mt-2">
+                                        <strong>Payment:</strong> 
+                                        <span class="{% if registration.payment_status == 'paid' %}text-success{% elif registration.payment_status == 'pending' %}text-warning{% else %}text-danger{% endif %}">
+                                            {{ registration.payment_status|title }}
+                                        </span>
+                                    </div>
+                                    <div class="mt-3">
+                                        <a href="{% url 'workshops:detail' registration.workshop.pk %}" class="btn btn-sm btn-primary">View Workshop</a>
+                                        {% if registration.status != 'cancelled' and not registration.workshop.is_past %}
+                                            <a href="{% url 'workshops:cancel_registration' registration.pk %}" class="btn btn-sm btn-outline-danger">Cancel Registration</a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="text-center mt-3">
+                            <a href="{% url 'accounts:workshop_history' %}" class="btn btn-primary">View Complete Workshop History</a>
+                        </div>
+                    {% else %}
+                        <div class="no-items-message">
+                            <div class="no-items-icon">
+                                <i class="far fa-calendar-check"></i>
+                            </div>
+                            <h5>No workshop registrations</h5>
+                            <p>You're not registered for any workshops. Explore our workshop offerings!</p>
+                            <div class="mt-3">
+                                <a href="{% url 'workshops:list' %}" class="btn btn-primary">Browse Workshops</a>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Themes Tab -->
+                <div class="tab-pane fade" id="themes" role="tabpanel" aria-labelledby="themes-tab">
+                    <h3 class="mb-4">Theme Preferences</h3>
+                    <p>Customize the appearance of Creative Platform by selecting your preferred theme below.</p>
+                    
+                    <div class="theme-selector">
+                        <div class="theme-options">
+                            {% for theme in available_themes %}
+                            <div class="theme-option {% if profile.theme.id == theme.id %}active{% endif %}">
+                                <form method="post" action="{% url 'accounts:switch_theme' theme.id %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="next" value="{% url 'accounts:profile' %}">
+                                    <button type="submit" class="bg-transparent border-0 p-0 w-100">
+                                        <div class="theme-preview theme-{{ theme.css_file|cut:'.css' }}"></div>
+                                        <div class="theme-name">{{ theme.name }}</div>
+                                    </button>
+                                </form>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <div class="mt-5">
+                        <h4>Current Theme: {{ profile.theme.name }}</h4>
+                        <p>Your theme preference is saved and will be applied to all pages of the platform.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animation for profile content
+        gsap.from('.profile-avatar', {
+            opacity: 0,
+            y: 30,
+            duration: 0.8,
+            ease: 'power3.out'
+        });
+        
+        gsap.from('.profile-info', {
+            opacity: 0,
+            y: 30,
+            duration: 0.8,
+            delay: 0.2,
+            ease: 'power3.out'
+        });
+        
+        gsap.from('.profile-tabs', {
+            opacity: 0,
+            y: 50,
+            duration: 1,
+            delay: 0.4,
+            ease: 'power3.out'
+        });
+        
+        // Animate recent items on tab change
+        document.querySelectorAll('[data-bs-toggle="tab"]').forEach(tab => {
+            tab.addEventListener('shown.bs.tab', function (e) {
+                const target = e.target.getAttribute('data-bs-target');
+                gsap.from(`${target} .recent-item`, {
+                    opacity: 0,
+                    y: 20,
+                    stagger: 0.1,
+                    duration: 0.5,
+                    ease: 'power3.out'
+                });
+            });
+        });
+    });
+</script>
+{% endblock %}

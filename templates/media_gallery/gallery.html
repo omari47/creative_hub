@@ -1,0 +1,576 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Media Gallery - Creative Platform{% endblock %}
+
+{% block extra_css %}
+<style>
+    .gallery-hero {
+        background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+                    url('https://source.unsplash.com/random/1920x600/?photo,gallery');
+        background-position: center;
+        background-size: cover;
+        color: #fff;
+        padding: 6rem 0;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .gallery-title {
+        font-size: 3rem;
+        font-weight: 800;
+        margin-bottom: 1.5rem;
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    .gallery-description {
+        font-size: 1.2rem;
+        max-width: 700px;
+        margin: 0 auto 2rem;
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    .gallery-search {
+        max-width: 500px;
+        margin: 0 auto;
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    .search-form {
+        display: flex;
+    }
+
+    .search-input {
+        flex-grow: 1;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+        height: 50px;
+        font-size: 1.1rem;
+        background-color: rgba(255, 255, 255, 0.9);
+        border: none;
+        padding-left: 20px;
+    }
+
+    .search-btn {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+        width: 60px;
+        height: 50px;
+        background-color: var(--accent-color);
+        border: none;
+    }
+
+    .search-btn:hover {
+        background-color: var(--primary-color);
+    }
+
+    .featured-section {
+        padding: 4rem 0;
+    }
+
+    .section-title {
+        text-align: center;
+        margin-bottom: 3rem;
+        position: relative;
+    }
+
+    .section-title:after {
+        content: '';
+        position: absolute;
+        bottom: -15px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 4px;
+        background: var(--accent-color);
+        border-radius: 2px;
+    }
+
+    .filter-bar {
+        background-color: var(--card-bg);
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin-bottom: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .filter-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .filter-label {
+        font-weight: 600;
+        margin-right: 0.5rem;
+    }
+
+    .filter-dropdown {
+        min-width: 150px;
+    }
+
+    .gallery-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+    }
+
+    .gallery-item {
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        background-color: var(--card-bg);
+        position: relative;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        cursor: pointer;
+    }
+
+    .gallery-item:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .gallery-item-img-container {
+        position: relative;
+        overflow: hidden;
+        padding-bottom: 56.25%; /* 16:9 aspect ratio */
+    }
+
+    .gallery-item-img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+    .gallery-item:hover .gallery-item-img {
+        transform: scale(1.1);
+    }
+
+    .gallery-item-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0) 100%);
+        opacity: 0.8;
+        transition: opacity 0.3s ease;
+    }
+
+    .gallery-item:hover .gallery-item-overlay {
+        opacity: 1;
+    }
+
+    .gallery-item-type {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background-color: var(--accent-color);
+        color: white;
+        padding: 0.3rem 0.8rem;
+        border-radius: 30px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        z-index: 2;
+    }
+
+    .gallery-item-content {
+        padding: 1.5rem;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .gallery-item-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .gallery-item-desc {
+        color: var(--text-color-muted);
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+        flex-grow: 1;
+    }
+
+    .gallery-item-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 0.8rem;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .gallery-item-category {
+        font-size: 0.85rem;
+        color: var(--text-color-muted);
+    }
+
+    .gallery-item-date {
+        font-size: 0.85rem;
+        color: var(--text-color-muted);
+    }
+
+    .pagination-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 2rem;
+    }
+
+    .page-item.active .page-link {
+        background-color: var(--accent-color);
+        border-color: var(--accent-color);
+    }
+
+    .page-link {
+        color: var(--accent-color);
+    }
+
+    .page-link:hover {
+        color: var(--primary-color);
+    }
+
+    .video-play-icon {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 60px;
+        height: 60px;
+        background-color: rgba(var(--accent-color-rgb), 0.8);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2;
+        color: white;
+        opacity: 0.9;
+        transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    .gallery-item:hover .video-play-icon {
+        transform: translate(-50%, -50%) scale(1.1);
+        opacity: 1;
+    }
+
+    .no-items-found {
+        text-align: center;
+        padding: 4rem 2rem;
+        background-color: var(--card-bg);
+        border-radius: 10px;
+        margin-bottom: 2rem;
+    }
+
+    .no-items-icon {
+        font-size: 4rem;
+        color: var(--text-color-muted);
+        margin-bottom: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Gallery Hero Section -->
+<section class="gallery-hero">
+    <div class="container">
+        <h1 class="gallery-title">Media Gallery</h1>
+        <p class="gallery-description">Explore our collection of stunning photography, videos, and event coverage</p>
+        
+        <div class="gallery-search">
+            <form action="{% url 'media_gallery:search' %}" method="get" class="search-form">
+                <input type="text" name="q" class="form-control search-input" placeholder="Search media..." aria-label="Search media">
+                <button type="submit" class="btn search-btn">
+                    <i class="fas fa-search"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Media Section -->
+{% if featured %}
+<section class="featured-section">
+    <div class="container">
+        <h2 class="section-title">Featured Media</h2>
+        
+        <div class="gallery-grid">
+            {% for item in featured %}
+            <a href="{% url 'media_gallery:detail' item.pk %}" class="text-decoration-none text-reset">
+                <div class="gallery-item">
+                    <div class="gallery-item-img-container">
+                        {% if item.file %}
+                            <img src="{{ item.file.url }}" alt="{{ item.title }}" class="gallery-item-img">
+                        {% elif item.thumbnail %}
+                            <img src="{{ item.thumbnail.url }}" alt="{{ item.title }}" class="gallery-item-img">
+                        {% elif item.media_url %}
+                            <img src="{{ item.media_url }}" alt="{{ item.title }}" class="gallery-item-img">
+                        {% else %}
+                            <img src="https://via.placeholder.com/400x225?text=No+Image" alt="{{ item.title }}" class="gallery-item-img">
+                        {% endif %}
+                        <div class="gallery-item-overlay"></div>
+                        
+                        <span class="gallery-item-type">{{ item.media_type|title }}</span>
+                        
+                        {% if item.media_type == 'video' %}
+                        <div class="video-play-icon">
+                            <i class="fas fa-play"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="gallery-item-content">
+                        <h3 class="gallery-item-title">{{ item.title }}</h3>
+                        <p class="gallery-item-desc">{{ item.description|truncatechars:100 }}</p>
+                        
+                        <div class="gallery-item-footer">
+                            <span class="gallery-item-category">
+                                {% if item.category %}
+                                <i class="fas fa-folder me-1"></i>{{ item.category.name }}
+                                {% else %}
+                                <i class="fas fa-folder me-1"></i>Uncategorized
+                                {% endif %}
+                            </span>
+                            <span class="gallery-item-date">
+                                <i class="far fa-calendar-alt me-1"></i>{{ item.created_at|date:"M d, Y" }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Main Gallery Section -->
+<section class="main-gallery-section py-5">
+    <div class="container">
+        <h2 class="section-title">Browse Media</h2>
+        
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+            <form method="get" action="{% url 'media_gallery:gallery' %}" id="filterForm">
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <span class="filter-label">Category:</span>
+                        <select name="category" class="form-select filter-dropdown" onchange="this.form.submit()">
+                            <option value="">All Categories</option>
+                            {% for category in categories %}
+                            <option value="{{ category.id }}" {% if current_category == category.id|stringformat:"s" %}selected{% endif %}>
+                                {{ category.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <span class="filter-label">Type:</span>
+                        <select name="type" class="form-select filter-dropdown" onchange="this.form.submit()">
+                            <option value="">All Types</option>
+                            <option value="photo" {% if current_type == 'photo' %}selected{% endif %}>Photos</option>
+                            <option value="video" {% if current_type == 'video' %}selected{% endif %}>Videos</option>
+                            <option value="event" {% if current_type == 'event' %}selected{% endif %}>Events</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group ms-auto">
+                        <a href="{% url 'media_gallery:featured' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-star me-1"></i>Featured Only
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Gallery Grid -->
+        {% if media_items %}
+        <div class="gallery-grid">
+            {% for item in media_items %}
+            <a href="{% url 'media_gallery:detail' item.pk %}" class="text-decoration-none text-reset">
+                <div class="gallery-item">
+                    <div class="gallery-item-img-container">
+                        {% if item.file %}
+                            <img src="{{ item.file.url }}" alt="{{ item.title }}" class="gallery-item-img">
+                        {% elif item.thumbnail %}
+                            <img src="{{ item.thumbnail.url }}" alt="{{ item.title }}" class="gallery-item-img">
+                        {% elif item.media_url %}
+                            <img src="{{ item.media_url }}" alt="{{ item.title }}" class="gallery-item-img">
+                        {% else %}
+                            <img src="https://via.placeholder.com/400x225?text=No+Image" alt="{{ item.title }}" class="gallery-item-img">
+                        {% endif %}
+                        <div class="gallery-item-overlay"></div>
+                        
+                        <span class="gallery-item-type">{{ item.media_type|title }}</span>
+                        
+                        {% if item.media_type == 'video' %}
+                        <div class="video-play-icon">
+                            <i class="fas fa-play"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="gallery-item-content">
+                        <h3 class="gallery-item-title">{{ item.title }}</h3>
+                        <p class="gallery-item-desc">{{ item.description|truncatechars:100 }}</p>
+                        
+                        <div class="gallery-item-footer">
+                            <span class="gallery-item-category">
+                                {% if item.category %}
+                                <i class="fas fa-folder me-1"></i>{{ item.category.name }}
+                                {% else %}
+                                <i class="fas fa-folder me-1"></i>Uncategorized
+                                {% endif %}
+                            </span>
+                            <span class="gallery-item-date">
+                                <i class="far fa-calendar-alt me-1"></i>{{ item.created_at|date:"M d, Y" }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if media_items.has_other_pages %}
+        <div class="pagination-container">
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    {% if media_items.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ media_items.previous_page_number }}{% if current_category %}&category={{ current_category }}{% endif %}{% if current_type %}&type={{ current_type }}{% endif %}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link" aria-hidden="true">&laquo;</span>
+                        </li>
+                    {% endif %}
+                    
+                    {% for i in media_items.paginator.page_range %}
+                        {% if media_items.number == i %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ i }}</span>
+                            </li>
+                        {% else %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ i }}{% if current_category %}&category={{ current_category }}{% endif %}{% if current_type %}&type={{ current_type }}{% endif %}">{{ i }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if media_items.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ media_items.next_page_number }}{% if current_category %}&category={{ current_category }}{% endif %}{% if current_type %}&type={{ current_type }}{% endif %}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link" aria-hidden="true">&raquo;</span>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+        
+        {% else %}
+        <div class="no-items-found">
+            <div class="no-items-icon">
+                <i class="far fa-images"></i>
+            </div>
+            <h3>No Media Items Found</h3>
+            <p class="mb-4">No items match your current filter criteria. Try changing your filters or check back later!</p>
+            <a href="{% url 'media_gallery:gallery' %}" class="btn btn-primary">Clear Filters</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Hero section animations
+        gsap.to('.gallery-title', {
+            opacity: 1,
+            y: 0,
+            duration: 1,
+            ease: 'power3.out'
+        });
+        
+        gsap.to('.gallery-description', {
+            opacity: 1,
+            y: 0,
+            duration: 1,
+            delay: 0.2,
+            ease: 'power3.out'
+        });
+        
+        gsap.to('.gallery-search', {
+            opacity: 1,
+            y: 0,
+            duration: 1,
+            delay: 0.4,
+            ease: 'power3.out'
+        });
+        
+        // Gallery items animation on scroll
+        // ScrollTrigger removed to fix console errors
+        
+        // Use Intersection Observer instead of ScrollTrigger
+        const grids = document.querySelectorAll('.gallery-grid');
+        
+        grids.forEach(grid => {
+            const items = grid.querySelectorAll('.gallery-item');
+            
+            // Set initial styles
+            items.forEach(item => {
+                item.style.opacity = 0;
+                item.style.transform = 'translateY(50px)';
+            });
+            
+            // Create observer
+            const gridObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        // Animate items with staggered delay
+                        const gridItems = entry.target.querySelectorAll('.gallery-item');
+                        gridItems.forEach((item, index) => {
+                            setTimeout(() => {
+                                gsap.to(item, {
+                                    opacity: 1,
+                                    y: 0,
+                                    duration: 0.8
+                                });
+                            }, index * 100); // 100ms staggered delay
+                        });
+                        
+                        gridObserver.unobserve(entry.target);
+                    }
+                });
+            }, {threshold: 0.2});
+            
+            // Observe the grid
+            gridObserver.observe(grid);
+        });
+    });
+</script>
+{% endblock %}

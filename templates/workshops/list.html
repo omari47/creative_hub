@@ -1,0 +1,583 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Workshops{% endblock %}
+
+{% block extra_css %}
+<style>
+    .workshops-header {
+        background: var(--gradient-hero);
+        padding: 8rem 0 5rem;
+        color: white;
+        text-align: center;
+    }
+    
+    .workshops-title {
+        font-size: 3rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+    }
+    
+    .workshops-subtitle {
+        font-size: 1.25rem;
+        max-width: 700px;
+        margin: 0 auto 2rem;
+        opacity: 0.9;
+    }
+    
+    .workshops-filters {
+        background-color: var(--surface-color);
+        padding: 1.5rem 0;
+        border-bottom: 1px solid var(--border-color);
+        margin-bottom: 3rem;
+    }
+    
+    .filter-button {
+        background-color: transparent;
+        border: 1px solid var(--border-color);
+        color: var(--text-color-muted);
+        padding: 0.5rem 1rem;
+        border-radius: var(--border-radius);
+        margin-right: 0.5rem;
+        font-weight: 500;
+        transition: var(--transition-normal);
+    }
+    
+    .filter-button:hover {
+        background-color: rgba(var(--primary-color-rgb), 0.1);
+        color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+    
+    .filter-button.active {
+        background-color: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+    }
+    
+    .workshops-container {
+        padding-bottom: 4rem;
+    }
+    
+    .no-workshops {
+        padding: 4rem 0;
+        text-align: center;
+    }
+    
+    .no-workshops-icon {
+        color: var(--text-color-muted);
+        font-size: 4rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .no-workshops-message {
+        font-size: 1.5rem;
+        color: var(--text-color-muted);
+        margin-bottom: 1rem;
+    }
+    
+    .workshop-card {
+        background-color: var(--card-bg);
+        border-radius: var(--border-radius-lg);
+        overflow: hidden;
+        height: 100%;
+        transition: var(--transition-normal);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .workshop-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    .workshop-image {
+        height: 200px;
+        position: relative;
+    }
+    
+    .workshop-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .workshop-type {
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
+        background-color: var(--primary-color);
+        color: white;
+        padding: 0.35rem 0.75rem;
+        border-radius: var(--border-radius);
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+    
+    .workshop-content {
+        padding: 1.5rem;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .workshop-date {
+        display: inline-block;
+        background-color: rgba(var(--primary-color-rgb), 0.1);
+        color: var(--primary-color);
+        padding: 0.35rem 0.75rem;
+        border-radius: var(--border-radius);
+        font-size: 0.85rem;
+        margin-bottom: 1rem;
+    }
+    
+    .workshop-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+        line-height: 1.4;
+    }
+    
+    .workshop-title a {
+        color: var(--text-color);
+        text-decoration: none;
+    }
+    
+    .workshop-title a:hover {
+        color: var(--primary-color);
+    }
+    
+    .workshop-description {
+        color: var(--text-color-muted);
+        margin-bottom: 1.5rem;
+        flex-grow: 1;
+    }
+    
+    .workshop-meta {
+        border-top: 1px solid var(--border-color);
+        padding-top: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .workshop-instructor {
+        display: flex;
+        align-items: center;
+    }
+    
+    .instructor-avatar {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        margin-right: 0.75rem;
+        object-fit: cover;
+    }
+    
+    .instructor-name {
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+    
+    .workshop-price {
+        font-weight: 700;
+        color: var(--text-color);
+    }
+    
+    .workshop-price.free {
+        color: var(--success-color);
+    }
+    
+    .workshop-featured {
+        position: relative;
+        background-color: var(--card-bg);
+        border-radius: var(--border-radius-lg);
+        overflow: hidden;
+        margin-bottom: 3rem;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    }
+    
+    @media (min-width: 768px) {
+        .workshop-featured {
+            flex-direction: row;
+            height: 400px;
+        }
+    }
+    
+    .featured-image {
+        height: 250px;
+        position: relative;
+    }
+    
+    @media (min-width: 768px) {
+        .featured-image {
+            width: 50%;
+            height: auto;
+        }
+    }
+    
+    .featured-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .featured-content {
+        padding: 2rem;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    @media (min-width: 768px) {
+        .featured-content {
+            width: 50%;
+            padding: 3rem;
+        }
+    }
+    
+    .featured-badge {
+        display: inline-block;
+        background: linear-gradient(45deg, var(--primary-color) 0%, var(--accent-color) 100%);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: var(--border-radius);
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+    }
+    
+    .featured-title {
+        font-size: 2rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        line-height: 1.3;
+    }
+    
+    .featured-date {
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+    }
+    
+    .featured-date i {
+        margin-right: 0.5rem;
+        color: var(--primary-color);
+    }
+    
+    .featured-description {
+        margin-bottom: 2rem;
+        flex-grow: 1;
+    }
+    
+    .featured-stats {
+        display: flex;
+        margin-bottom: 1.5rem;
+    }
+    
+    .featured-stat {
+        margin-right: 1.5rem;
+        display: flex;
+        align-items: center;
+    }
+    
+    .featured-stat i {
+        margin-right: 0.5rem;
+        color: var(--primary-color);
+    }
+    
+    .featured-actions {
+        display: flex;
+        align-items: center;
+    }
+    
+    .featured-price {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-right: 1.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Workshops Header -->
+<section class="workshops-header">
+    <div class="container">
+        <h1 class="workshops-title reveal">Creative Workshops</h1>
+        <p class="workshops-subtitle reveal">Enhance your skills through interactive sessions with industry professionals.</p>
+        <a href="{% url 'workshops:my_workshops' %}" class="btn btn-outline-light reveal">
+            <i class="fas fa-bookmark me-2"></i> My Workshops
+        </a>
+    </div>
+</section>
+
+<!-- Workshops Filters -->
+<div class="workshops-filters">
+    <div class="container">
+        <div class="d-flex flex-wrap">
+            <button class="filter-button active">All Categories</button>
+            <button class="filter-button">Photography</button>
+            <button class="filter-button">Videography</button>
+            <button class="filter-button">Graphic Design</button>
+            <button class="filter-button">Music Production</button>
+            <button class="filter-button">Digital Art</button>
+        </div>
+    </div>
+</div>
+
+<div class="workshops-container">
+    <div class="container">
+        <!-- Featured Workshop -->
+        <div class="workshop-featured reveal">
+            <div class="featured-image">
+                <img src="{% static 'img/workshop-placeholder.svg' %}" alt="Featured Workshop">
+            </div>
+            <div class="featured-content">
+                <span class="featured-badge">
+                    <i class="fas fa-star me-2"></i> Featured Workshop
+                </span>
+                <h2 class="featured-title">Advanced Cinematography: Visual Storytelling</h2>
+                <div class="featured-date">
+                    <i class="fas fa-calendar-day"></i>
+                    <span>May 10, 2025 at 9:00 AM</span>
+                </div>
+                <div class="featured-description">
+                    <p>Learn the art of visual storytelling from award-winning cinematographer Michael Rodriguez. This intensive workshop will cover advanced techniques in lighting, camera movement, and composition to elevate your video productions.</p>
+                </div>
+                <div class="featured-stats">
+                    <div class="featured-stat">
+                        <i class="fas fa-clock"></i>
+                        <span>8 hours</span>
+                    </div>
+                    <div class="featured-stat">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>In Person</span>
+                    </div>
+                    <div class="featured-stat">
+                        <i class="fas fa-user-friends"></i>
+                        <span>12 spots left</span>
+                    </div>
+                </div>
+                <div class="featured-actions">
+                    <div class="featured-price">$199.00</div>
+                    <a href="#" class="btn btn-primary">Learn More</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Workshops Grid -->
+        <h2 class="section-title mb-4 reveal">Upcoming Workshops</h2>
+        
+        {% if workshops %}
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {% for workshop in workshops %}
+            <div class="col reveal">
+                <div class="workshop-card">
+                    <div class="workshop-image">
+                        <img src="{% if workshop.image %}{{ workshop.image.url }}{% else %}{% static 'img/workshop-placeholder.svg' %}{% endif %}" alt="{{ workshop.title }}">
+                        <span class="workshop-type">{{ workshop.category }}</span>
+                    </div>
+                    <div class="workshop-content">
+                        <span class="workshop-date">
+                            <i class="fas fa-calendar-day me-1"></i>
+                            {{ workshop.start_date|date:"F j, Y" }}
+                        </span>
+                        <h3 class="workshop-title">
+                            <a href="{% url 'workshops:detail' workshop.id %}">{{ workshop.title }}</a>
+                        </h3>
+                        <div class="workshop-description">
+                            <p>{{ workshop.description|truncatechars:120 }}</p>
+                        </div>
+                        <div class="workshop-meta">
+                            <div class="workshop-instructor">
+                                <img src="{% if workshop.instructor.profile.avatar %}{{ workshop.instructor.profile.avatar.url }}{% else %}{% static 'img/avatar-placeholder.svg' %}{% endif %}" alt="{{ workshop.instructor.get_full_name|default:workshop.instructor.username }}" class="instructor-avatar">
+                                <span class="instructor-name">{{ workshop.instructor.get_full_name|default:workshop.instructor.username }}</span>
+                            </div>
+                            {% if workshop.price == 0 %}
+                            <div class="workshop-price free">Free</div>
+                            {% else %}
+                            <div class="workshop-price">${{ workshop.price }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            
+            <!-- Placeholder workshops since we don't have any real ones yet -->
+            <div class="col reveal">
+                <div class="workshop-card">
+                    <div class="workshop-image">
+                        <img src="{% static 'img/workshop-placeholder.svg' %}" alt="Photography Masterclass">
+                        <span class="workshop-type">Photography</span>
+                    </div>
+                    <div class="workshop-content">
+                        <span class="workshop-date">
+                            <i class="fas fa-calendar-day me-1"></i>
+                            April 15, 2025
+                        </span>
+                        <h3 class="workshop-title">
+                            <a href="#">Photography Masterclass: Light & Composition</a>
+                        </h3>
+                        <div class="workshop-description">
+                            <p>Learn the artistic and technical aspects of using light and composition to create stunning photographs in any environment.</p>
+                        </div>
+                        <div class="workshop-meta">
+                            <div class="workshop-instructor">
+                                <img src="{% static 'img/avatar-placeholder.svg' %}" alt="John Smith" class="instructor-avatar">
+                                <span class="instructor-name">John Smith</span>
+                            </div>
+                            <div class="workshop-price">$99.00</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col reveal">
+                <div class="workshop-card">
+                    <div class="workshop-image">
+                        <img src="{% static 'img/workshop-placeholder.svg' %}" alt="Music Production Workshop">
+                        <span class="workshop-type">Music Production</span>
+                    </div>
+                    <div class="workshop-content">
+                        <span class="workshop-date">
+                            <i class="fas fa-calendar-day me-1"></i>
+                            April 22, 2025
+                        </span>
+                        <h3 class="workshop-title">
+                            <a href="#">Electronic Music Production Fundamentals</a>
+                        </h3>
+                        <div class="workshop-description">
+                            <p>Get started with electronic music production using industry-standard tools and techniques. Perfect for beginners!</p>
+                        </div>
+                        <div class="workshop-meta">
+                            <div class="workshop-instructor">
+                                <img src="{% static 'img/avatar-placeholder.svg' %}" alt="Lisa Johnson" class="instructor-avatar">
+                                <span class="instructor-name">Lisa Johnson</span>
+                            </div>
+                            <div class="workshop-price">$79.00</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col reveal">
+                <div class="workshop-card">
+                    <div class="workshop-image">
+                        <img src="{% static 'img/workshop-placeholder.svg' %}" alt="Graphic Design Workshop">
+                        <span class="workshop-type">Graphic Design</span>
+                    </div>
+                    <div class="workshop-content">
+                        <span class="workshop-date">
+                            <i class="fas fa-calendar-day me-1"></i>
+                            April 30, 2025
+                        </span>
+                        <h3 class="workshop-title">
+                            <a href="#">Logo Design: From Concept to Completion</a>
+                        </h3>
+                        <div class="workshop-description">
+                            <p>Master the process of creating memorable, effective logos that communicate your clients' brand values and identity.</p>
+                        </div>
+                        <div class="workshop-meta">
+                            <div class="workshop-instructor">
+                                <img src="{% static 'img/avatar-placeholder.svg' %}" alt="Alex Chen" class="instructor-avatar">
+                                <span class="instructor-name">Alex Chen</span>
+                            </div>
+                            <div class="workshop-price free">Free</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col reveal">
+                <div class="workshop-card">
+                    <div class="workshop-image">
+                        <img src="{% static 'img/workshop-placeholder.svg' %}" alt="Video Editing Workshop">
+                        <span class="workshop-type">Videography</span>
+                    </div>
+                    <div class="workshop-content">
+                        <span class="workshop-date">
+                            <i class="fas fa-calendar-day me-1"></i>
+                            May 5, 2025
+                        </span>
+                        <h3 class="workshop-title">
+                            <a href="#">Cinematic Video Editing Techniques</a>
+                        </h3>
+                        <div class="workshop-description">
+                            <p>Learn professional editing techniques to create cinematic, engaging videos that captivate your audience from start to finish.</p>
+                        </div>
+                        <div class="workshop-meta">
+                            <div class="workshop-instructor">
+                                <img src="{% static 'img/avatar-placeholder.svg' %}" alt="Maria Rodriguez" class="instructor-avatar">
+                                <span class="instructor-name">Maria Rodriguez</span>
+                            </div>
+                            <div class="workshop-price">$129.00</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col reveal">
+                <div class="workshop-card">
+                    <div class="workshop-image">
+                        <img src="{% static 'img/workshop-placeholder.svg' %}" alt="Digital Art Workshop">
+                        <span class="workshop-type">Digital Art</span>
+                    </div>
+                    <div class="workshop-content">
+                        <span class="workshop-date">
+                            <i class="fas fa-calendar-day me-1"></i>
+                            May 12, 2025
+                        </span>
+                        <h3 class="workshop-title">
+                            <a href="#">Character Design for Animation & Games</a>
+                        </h3>
+                        <div class="workshop-description">
+                            <p>Create compelling, expressive characters that are ready for animation and game development using digital tools.</p>
+                        </div>
+                        <div class="workshop-meta">
+                            <div class="workshop-instructor">
+                                <img src="{% static 'img/avatar-placeholder.svg' %}" alt="David Kim" class="instructor-avatar">
+                                <span class="instructor-name">David Kim</span>
+                            </div>
+                            <div class="workshop-price">$149.00</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="no-workshops">
+            <div class="no-workshops-icon">
+                <i class="fas fa-calendar-times"></i>
+            </div>
+            <h3 class="no-workshops-message">No workshops available at the moment</h3>
+            <p class="mb-4">Check back soon for upcoming creative workshops!</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Filter buttons functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const filterButtons = document.querySelectorAll('.filter-button');
+        
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // Remove active class from all buttons
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                
+                // Add active class to clicked button
+                this.classList.add('active');
+                
+                // Here you would implement the actual filtering
+                // For now, this is just a UI demonstration
+            });
+        });
+    });
+</script>
+{% endblock %}

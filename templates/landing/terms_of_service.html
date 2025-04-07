@@ -1,0 +1,226 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Terms of Service - Creative Platform{% endblock %}
+
+{% block extra_css %}
+<style>
+    .terms-hero {
+        background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+                    url('https://source.unsplash.com/random/1920x600/?document,contract') no-repeat center center/cover;
+        color: #fff;
+        padding: 5rem 0;
+        text-align: center;
+    }
+
+    .terms-section {
+        padding: 4rem 0;
+    }
+
+    .terms-content {
+        background-color: var(--card-bg);
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .terms-content h2 {
+        color: var(--heading-color);
+        margin-top: 2rem;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--accent-color);
+    }
+
+    .terms-content h2:first-child {
+        margin-top: 0;
+    }
+
+    .terms-content p, .terms-content ul {
+        margin-bottom: 1.5rem;
+    }
+
+    .terms-date {
+        font-style: italic;
+        margin-bottom: 2rem;
+    }
+
+    .terms-toc {
+        background-color: var(--section-alt-bg);
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+    }
+
+    .terms-toc ol {
+        margin-bottom: 0;
+    }
+
+    .terms-toc a {
+        color: var(--link-color);
+        text-decoration: none;
+    }
+
+    .terms-toc a:hover {
+        color: var(--link-hover-color);
+        text-decoration: underline;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Terms of Service Hero Section -->
+<section class="terms-hero">
+    <div class="container">
+        <h1 class="display-4 mb-4">Terms of Service</h1>
+        <p class="lead">Please read these terms carefully before using our platform</p>
+    </div>
+</section>
+
+<!-- Terms of Service Content Section -->
+<section class="terms-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="terms-content">
+                    <p class="terms-date">Last updated: January 1, 2023</p>
+                    
+                    <div class="terms-toc">
+                        <h4>Table of Contents</h4>
+                        <ol>
+                            <li><a href="#acceptance">Acceptance of Terms</a></li>
+                            <li><a href="#accounts">User Accounts</a></li>
+                            <li><a href="#content">User Content</a></li>
+                            <li><a href="#payments">Purchases and Payments</a></li>
+                            <li><a href="#workshops">Workshop Registrations</a></li>
+                            <li><a href="#intellectual-property">Intellectual Property Rights</a></li>
+                            <li><a href="#prohibited">Prohibited Activities</a></li>
+                            <li><a href="#termination">Termination</a></li>
+                            <li><a href="#liability">Limitation of Liability</a></li>
+                            <li><a href="#disclaimers">Disclaimers</a></li>
+                            <li><a href="#governing-law">Governing Law</a></li>
+                            <li><a href="#changes">Changes to Terms</a></li>
+                            <li><a href="#contact">Contact Us</a></li>
+                        </ol>
+                    </div>
+                    
+                    <h2 id="acceptance">1. Acceptance of Terms</h2>
+                    <p>
+                        By accessing or using Creative Platform, you agree to be bound by these Terms of Service and all applicable laws and regulations. If you do not agree with any of these terms, you are prohibited from using or accessing this site.
+                    </p>
+                    
+                    <h2 id="accounts">2. User Accounts</h2>
+                    <p>
+                        When you create an account with us, you must provide information that is accurate, complete, and current at all times. Failure to do so constitutes a breach of the Terms, which may result in immediate termination of your account on our platform.
+                    </p>
+                    <p>
+                        You are responsible for safeguarding the password that you use to access the platform and for any activities or actions under your password. You agree not to disclose your password to any third party. You must notify us immediately upon becoming aware of any breach of security or unauthorized use of your account.
+                    </p>
+                    
+                    <h2 id="content">3. User Content</h2>
+                    <p>
+                        Our platform allows you to post, link, store, share and otherwise make available certain information, text, graphics, videos, or other material. You are responsible for the content that you post on or through the platform, including its legality, reliability, and appropriateness.
+                    </p>
+                    <p>
+                        By posting content on or through the platform, you represent and warrant that:
+                    </p>
+                    <ul>
+                        <li>The content is yours (you own it) or you have the right to use it and grant us the rights and license as provided in these Terms.</li>
+                        <li>The posting of your content on or through the platform does not violate the privacy rights, publicity rights, copyrights, contract rights or any other rights of any person.</li>
+                    </ul>
+                    
+                    <h2 id="payments">4. Purchases and Payments</h2>
+                    <p>
+                        You may be required to purchase or pay a fee to access some of our services, such as featured movies. You agree to provide current, complete, and accurate purchase and account information for all purchases made on our platform.
+                    </p>
+                    <p>
+                        We reserve the right to refuse or cancel your order if fraud or an unauthorized or illegal transaction is suspected. We also reserve the right to change our prices for products displayed at any time, and to correct pricing errors that may inadvertently occur.
+                    </p>
+                    
+                    <h2 id="workshops">5. Workshop Registrations</h2>
+                    <p>
+                        When registering for a workshop, you agree to provide accurate and complete information about yourself. You also agree to pay any applicable fees for the workshop and acknowledge that workshop registrations are subject to availability and our confirmation.
+                    </p>
+                    <p>
+                        Workshop cancellation and refund policies will be specified for each workshop. In general, we may provide refunds for cancellations made a certain number of days before the workshop, but we do not guarantee refunds for last-minute cancellations or no-shows.
+                    </p>
+                    
+                    <h2 id="intellectual-property">6. Intellectual Property Rights</h2>
+                    <p>
+                        The platform and its original content (excluding content provided by users), features, and functionality are and will remain the exclusive property of Creative Platform and its licensors. The platform is protected by copyright, trademark, and other laws of both the United States and foreign countries.
+                    </p>
+                    <p>
+                        Our trademarks and trade dress may not be used in connection with any product or service without the prior written consent of Creative Platform.
+                    </p>
+                    
+                    <h2 id="prohibited">7. Prohibited Activities</h2>
+                    <p>
+                        You may not engage in any of the following prohibited activities:
+                    </p>
+                    <ul>
+                        <li>Copying, distributing, or disclosing any part of the platform in any medium, including without limitation by any automated or non-automated "scraping"</li>
+                        <li>Using any automated system, including without limitation "robots," "spiders," "offline readers," etc., to access the platform</li>
+                        <li>Transmitting spam, chain letters, or other unsolicited email</li>
+                        <li>Attempting to interfere with, compromise the system integrity or security, or decipher any transmissions to or from the servers running the platform</li>
+                        <li>Uploading invalid data, viruses, worms, or other software agents through the platform</li>
+                        <li>Collecting or harvesting any personally identifiable information from the platform</li>
+                        <li>Using the platform for any commercial solicitation purposes without our explicit permission</li>
+                        <li>Impersonating another person or otherwise misrepresenting your affiliation with a person or entity</li>
+                        <li>Violating any applicable law or regulation</li>
+                    </ul>
+                    
+                    <h2 id="termination">8. Termination</h2>
+                    <p>
+                        We may terminate or suspend your account immediately, without prior notice or liability, for any reason whatsoever, including without limitation if you breach the Terms.
+                    </p>
+                    <p>
+                        Upon termination, your right to use the platform will immediately cease. If you wish to terminate your account, you may simply discontinue using the platform, or you may notify us that you wish to delete your account.
+                    </p>
+                    
+                    <h2 id="liability">9. Limitation of Liability</h2>
+                    <p>
+                        In no event shall Creative Platform, nor its directors, employees, partners, agents, suppliers, or affiliates, be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from:
+                    </p>
+                    <ul>
+                        <li>Your access to or use of or inability to access or use the platform;</li>
+                        <li>Any conduct or content of any third party on the platform;</li>
+                        <li>Any content obtained from the platform; and</li>
+                        <li>Unauthorized access, use or alteration of your transmissions or content.</li>
+                    </ul>
+                    
+                    <h2 id="disclaimers">10. Disclaimers</h2>
+                    <p>
+                        Your use of the platform is at your sole risk. The platform is provided on an "AS IS" and "AS AVAILABLE" basis. The platform is provided without warranties of any kind, whether express or implied, including, but not limited to, implied warranties of merchantability, fitness for a particular purpose, non-infringement or course of performance.
+                    </p>
+                    
+                    <h2 id="governing-law">11. Governing Law</h2>
+                    <p>
+                        These Terms shall be governed and construed in accordance with the laws of the United States, without regard to its conflict of law provisions.
+                    </p>
+                    <p>
+                        Our failure to enforce any right or provision of these Terms will not be considered a waiver of those rights. If any provision of these Terms is held to be invalid or unenforceable by a court, the remaining provisions of these Terms will remain in effect.
+                    </p>
+                    
+                    <h2 id="changes">12. Changes to Terms</h2>
+                    <p>
+                        We reserve the right, at our sole discretion, to modify or replace these Terms at any time. If a revision is material we will try to provide at least 30 days' notice prior to any new terms taking effect. What constitutes a material change will be determined at our sole discretion.
+                    </p>
+                    <p>
+                        By continuing to access or use our platform after those revisions become effective, you agree to be bound by the revised terms. If you do not agree to the new terms, please stop using the platform.
+                    </p>
+                    
+                    <h2 id="contact">13. Contact Us</h2>
+                    <p>
+                        If you have any questions about these Terms, please contact us:
+                    </p>
+                    <ul>
+                        <li>By email: terms@creativeplatform.com</li>
+                        <li>By visiting the contact page on our website: <a href="{% url 'landing:contact' %}">Contact Us</a></li>
+                        <li>By mail: 123 Creative Avenue, Inspiration City, IC 10101</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

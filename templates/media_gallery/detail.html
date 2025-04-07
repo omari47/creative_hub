@@ -1,0 +1,569 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ media_item.title }} - Creative Platform{% endblock %}
+
+{% block extra_css %}
+<style>
+    .media-detail-section {
+        padding: 5rem 0;
+    }
+
+    .media-container {
+        background-color: var(--card-bg);
+        border-radius: 10px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+
+    .media-display {
+        position: relative;
+        overflow: hidden;
+        background-color: #000;
+    }
+
+    .media-photo {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+
+    .media-video {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+
+    .media-info {
+        padding: 2rem;
+    }
+
+    .media-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .media-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+        color: var(--text-color-muted);
+    }
+
+    .media-meta-item {
+        display: flex;
+        align-items: center;
+    }
+
+    .media-meta-icon {
+        margin-right: 0.5rem;
+    }
+
+    .media-description {
+        margin-bottom: 2rem;
+        line-height: 1.7;
+    }
+
+    .media-tags {
+        margin-bottom: 1.5rem;
+    }
+
+    .media-tag {
+        display: inline-block;
+        background-color: var(--section-alt-bg);
+        color: var(--text-color);
+        padding: 0.4rem 0.8rem;
+        border-radius: 30px;
+        font-size: 0.9rem;
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .media-tag:hover {
+        background-color: var(--accent-color);
+        color: white;
+    }
+
+    .share-buttons {
+        margin-top: 2rem;
+    }
+
+    .share-title {
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+    .share-icons {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .share-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: var(--section-alt-bg);
+        color: var(--text-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
+    }
+
+    .share-icon:hover {
+        background-color: var(--accent-color);
+        color: white;
+        transform: translateY(-5px);
+    }
+
+    .media-sidebar {
+        margin-bottom: 2rem;
+    }
+
+    .sidebar-card {
+        background-color: var(--card-bg);
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .sidebar-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--accent-color);
+    }
+
+    .related-items {
+        margin-top: 4rem;
+    }
+
+    .related-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .related-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .related-item {
+        background-color: var(--card-bg);
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .related-item:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .related-item-img-container {
+        position: relative;
+        overflow: hidden;
+        padding-bottom: 56.25%; /* 16:9 aspect ratio */
+    }
+
+    .related-item-img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+    .related-item:hover .related-item-img {
+        transform: scale(1.1);
+    }
+
+    .related-item-content {
+        padding: 1.5rem;
+    }
+
+    .related-item-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .related-item-type {
+        font-size: 0.9rem;
+        color: var(--accent-color);
+        margin-bottom: 0.5rem;
+    }
+
+    .event-info-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .event-info-item {
+        display: flex;
+        margin-bottom: 1rem;
+    }
+
+    .event-info-icon {
+        width: 24px;
+        margin-right: 1rem;
+        color: var(--accent-color);
+    }
+
+    /* Lightbox for images */
+    .lightbox-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.9);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+    }
+
+    .lightbox-overlay.active {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .lightbox-content {
+        max-width: 90%;
+        max-height: 90%;
+    }
+
+    .lightbox-img {
+        max-width: 100%;
+        max-height: 90vh;
+        box-shadow: 0 5px 25px rgba(0, 0, 0, 0.5);
+    }
+
+    .lightbox-close {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        color: white;
+        font-size: 2rem;
+        cursor: pointer;
+        z-index: 1010;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Media Detail Section -->
+<section class="media-detail-section">
+    <div class="container">
+        <div class="row">
+            <!-- Media Content -->
+            <div class="col-lg-8">
+                <div class="media-container">
+                    <div class="media-display">
+                        {% if media_item.media_type == 'photo' %}
+                            {% if media_item.file %}
+                                <img src="{{ media_item.file.url }}" alt="{{ media_item.title }}" class="media-photo" id="mediaImage">
+                            {% elif media_item.media_url %}
+                                <img src="{{ media_item.media_url }}" alt="{{ media_item.title }}" class="media-photo" id="mediaImage">
+                            {% endif %}
+                        {% elif media_item.media_type == 'video' %}
+                            {% if media_item.file %}
+                                <video controls class="media-video">
+                                    <source src="{{ media_item.file.url }}" type="video/mp4">
+                                    Your browser does not support the video tag.
+                                </video>
+                            {% elif media_item.media_url %}
+                                <video controls class="media-video">
+                                    <source src="{{ media_item.media_url }}" type="video/mp4">
+                                    Your browser does not support the video tag.
+                                </video>
+                            {% endif %}
+                        {% elif media_item.media_type == 'event' %}
+                            {% if media_item.thumbnail %}
+                                <img src="{{ media_item.thumbnail.url }}" alt="{{ media_item.title }}" class="media-photo" id="mediaImage">
+                            {% elif media_item.media_url %}
+                                <img src="{{ media_item.media_url }}" alt="{{ media_item.title }}" class="media-photo" id="mediaImage">
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                    
+                    <div class="media-info">
+                        <h1 class="media-title">{{ media_item.title }}</h1>
+                        
+                        <div class="media-meta">
+                            <div class="media-meta-item">
+                                <span class="media-meta-icon"><i class="fas fa-image"></i></span>
+                                <span>{{ media_item.media_type|title }}</span>
+                            </div>
+                            <div class="media-meta-item">
+                                <span class="media-meta-icon"><i class="fas fa-folder"></i></span>
+                                <span>{% if media_item.category %}{{ media_item.category.name }}{% else %}Uncategorized{% endif %}</span>
+                            </div>
+                            <div class="media-meta-item">
+                                <span class="media-meta-icon"><i class="far fa-calendar-alt"></i></span>
+                                <span>{{ media_item.created_at|date:"F j, Y" }}</span>
+                            </div>
+                            {% if media_item.is_featured %}
+                            <div class="media-meta-item">
+                                <span class="media-meta-icon"><i class="fas fa-star"></i></span>
+                                <span>Featured</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="media-description">
+                            {{ media_item.description|linebreaks }}
+                        </div>
+                        
+                        <div class="media-tags">
+                            <span class="media-tag">{{ media_item.media_type|title }}</span>
+                            {% if media_item.category %}
+                            <span class="media-tag">{{ media_item.category.name }}</span>
+                            {% endif %}
+                            <!-- You could add more tags here if you add a tags field to your model -->
+                        </div>
+                        
+                        <div class="share-buttons">
+                            <h4 class="share-title">Share this {{ media_item.media_type }}</h4>
+                            <div class="share-icons">
+                                <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank" class="share-icon">
+                                    <i class="fab fa-facebook-f"></i>
+                                </a>
+                                <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}&text={{ media_item.title }}" target="_blank" class="share-icon">
+                                    <i class="fab fa-twitter"></i>
+                                </a>
+                                <a href="https://www.linkedin.com/shareArticle?mini=true&url={{ request.build_absolute_uri }}&title={{ media_item.title }}" target="_blank" class="share-icon">
+                                    <i class="fab fa-linkedin-in"></i>
+                                </a>
+                                <a href="https://pinterest.com/pin/create/button/?url={{ request.build_absolute_uri }}&media={% if media_item.file %}{{ media_item.file.url }}{% elif media_item.thumbnail %}{{ media_item.thumbnail.url }}{% elif media_item.media_url %}{{ media_item.media_url }}{% endif %}&description={{ media_item.title }}" target="_blank" class="share-icon">
+                                    <i class="fab fa-pinterest-p"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <div class="media-sidebar">
+                    <!-- Category Info -->
+                    <div class="sidebar-card">
+                        <h3 class="sidebar-title">Category</h3>
+                        <div class="d-grid gap-2">
+                            {% if media_item.category %}
+                            <a href="{% url 'media_gallery:category' media_item.category.slug %}" class="btn btn-outline-primary">
+                                <i class="fas fa-folder me-2"></i>View All in {{ media_item.category.name }}
+                            </a>
+                            {% else %}
+                            <span class="text-muted">This item has no category assigned.</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Media Type Info -->
+                    <div class="sidebar-card">
+                        <h3 class="sidebar-title">Similar {{ media_item.media_type|title }}s</h3>
+                        <div class="d-grid gap-2">
+                            <a href="{% url 'media_gallery:media_type' media_item.media_type %}" class="btn btn-outline-primary">
+                                <i class="fas fa-image me-2"></i>View All {{ media_item.media_type|title }}s
+                            </a>
+                        </div>
+                    </div>
+                    
+                    {% if media_item.media_type == 'event' %}
+                    <!-- Event Details -->
+                    <div class="sidebar-card">
+                        <h3 class="sidebar-title">Event Details</h3>
+                        <ul class="event-info-list">
+                            <li class="event-info-item">
+                                <div class="event-info-icon">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <div>
+                                    <strong>Location</strong><br>
+                                    Creative Studio, 123 Main St.
+                                </div>
+                            </li>
+                            <li class="event-info-item">
+                                <div class="event-info-icon">
+                                    <i class="far fa-calendar-alt"></i>
+                                </div>
+                                <div>
+                                    <strong>Date</strong><br>
+                                    December 15, 2023
+                                </div>
+                            </li>
+                            <li class="event-info-item">
+                                <div class="event-info-icon">
+                                    <i class="far fa-clock"></i>
+                                </div>
+                                <div>
+                                    <strong>Time</strong><br>
+                                    6:00 PM - 9:00 PM
+                                </div>
+                            </li>
+                            <li class="event-info-item">
+                                <div class="event-info-icon">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div>
+                                    <strong>Organizer</strong><br>
+                                    Creative Platform Team
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Related Items -->
+        {% if related_items %}
+        <div class="related-items">
+            <h2 class="related-title">More Like This</h2>
+            
+            <div class="related-grid">
+                {% for item in related_items %}
+                <a href="{% url 'media_gallery:detail' item.pk %}" class="text-decoration-none text-reset">
+                    <div class="related-item">
+                        <div class="related-item-img-container">
+                            {% if item.file %}
+                                <img src="{{ item.file.url }}" alt="{{ item.title }}" class="related-item-img">
+                            {% elif item.thumbnail %}
+                                <img src="{{ item.thumbnail.url }}" alt="{{ item.title }}" class="related-item-img">
+                            {% elif item.media_url %}
+                                <img src="{{ item.media_url }}" alt="{{ item.title }}" class="related-item-img">
+                            {% else %}
+                                <img src="https://via.placeholder.com/400x225?text=No+Image" alt="{{ item.title }}" class="related-item-img">
+                            {% endif %}
+                        </div>
+                        
+                        <div class="related-item-content">
+                            <div class="related-item-type">{{ item.media_type|title }}</div>
+                            <h3 class="related-item-title">{{ item.title }}</h3>
+                            <p class="related-item-desc">{{ item.description|truncatechars:60 }}</p>
+                        </div>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Lightbox for Images -->
+    <div class="lightbox-overlay" id="lightbox">
+        <span class="lightbox-close" id="lightboxClose">&times;</span>
+        <div class="lightbox-content">
+            <img src="" alt="Full size image" class="lightbox-img" id="lightboxImg">
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize animations
+        gsap.from('.media-container', {
+            opacity: 0,
+            y: 30,
+            duration: 0.8,
+            ease: 'power3.out'
+        });
+        
+        gsap.from('.media-sidebar .sidebar-card', {
+            opacity: 0,
+            x: 30,
+            stagger: 0.2,
+            duration: 0.8,
+            delay: 0.3,
+            ease: 'power3.out'
+        });
+        
+        // If there are related items
+        if (document.querySelector('.related-items')) {
+            gsap.from('.related-items', {
+                opacity: 0,
+                y: 30,
+                duration: 0.8,
+                delay: 0.5,
+                scrollTrigger: {
+                    trigger: '.related-items',
+                    start: 'top 80%'
+                }
+            });
+            
+            gsap.from('.related-item', {
+                opacity: 0,
+                y: 30,
+                stagger: 0.1,
+                duration: 0.8,
+                scrollTrigger: {
+                    trigger: '.related-grid',
+                    start: 'top 80%'
+                }
+            });
+        }
+        
+        // Lightbox functionality for images
+        const mediaImage = document.getElementById('mediaImage');
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightboxImg');
+        const lightboxClose = document.getElementById('lightboxClose');
+        
+        if (mediaImage && lightbox && lightboxImg && lightboxClose) {
+            // Open lightbox on image click
+            mediaImage.addEventListener('click', function() {
+                lightboxImg.src = this.src;
+                lightbox.classList.add('active');
+                document.body.style.overflow = 'hidden'; // Prevent scrolling
+                
+                // Animation for lightbox opening
+                gsap.from(lightboxImg, {
+                    scale: 0.8,
+                    opacity: 0,
+                    duration: 0.5,
+                    ease: 'power3.out'
+                });
+            });
+            
+            // Close lightbox on click outside image or on close button
+            lightbox.addEventListener('click', function(e) {
+                if (e.target === lightbox || e.target === lightboxClose) {
+                    lightbox.classList.remove('active');
+                    document.body.style.overflow = ''; // Restore scrolling
+                }
+            });
+            
+            // Close lightbox on ESC key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && lightbox.classList.contains('active')) {
+                    lightbox.classList.remove('active');
+                    document.body.style.overflow = ''; // Restore scrolling
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

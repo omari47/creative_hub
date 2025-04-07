@@ -1,0 +1,370 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Purchase History - Creative Platform{% endblock %}
+
+{% block extra_css %}
+<style>
+    .purchase-history-header {
+        background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+                  url('https://source.unsplash.com/random/1920x400/?shopping,payment');
+        background-position: center;
+        background-size: cover;
+        padding: 4rem 0;
+        color: #fff;
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .purchase-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .purchase-subtitle {
+        font-size: 1.2rem;
+        max-width: 700px;
+        margin: 0 auto;
+    }
+
+    .purchase-card {
+        background-color: var(--card-bg);
+        border-radius: 10px;
+        box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+        margin-bottom: 2rem;
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .purchase-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    }
+
+    .purchase-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .purchase-type {
+        display: inline-block;
+        padding: 0.3rem 0.8rem;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-right: 1rem;
+    }
+
+    .purchase-type.movie {
+        background-color: rgba(var(--primary-color-rgb), 0.1);
+        color: var(--primary-color);
+    }
+
+    .purchase-type.workshop {
+        background-color: rgba(var(--accent-color-rgb), 0.1);
+        color: var(--accent-color);
+    }
+
+    .purchase-title-text {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .purchase-body {
+        padding: 1.5rem;
+    }
+
+    .purchase-info {
+        display: flex;
+        flex-wrap: wrap;
+        margin-bottom: 1rem;
+    }
+
+    .purchase-info-item {
+        flex: 1;
+        min-width: 150px;
+        margin-bottom: 1rem;
+    }
+
+    .purchase-info-label {
+        font-size: 0.9rem;
+        color: var(--text-color-muted);
+        margin-bottom: 0.25rem;
+    }
+
+    .purchase-info-value {
+        font-weight: 600;
+    }
+
+    .purchase-actions {
+        margin-top: 1rem;
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .no-purchases {
+        background-color: var(--card-bg);
+        border-radius: 10px;
+        padding: 3rem;
+        text-align: center;
+        box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    .no-purchases-icon {
+        font-size: 4rem;
+        color: var(--text-color-muted);
+        margin-bottom: 1.5rem;
+    }
+
+    .pagination-container {
+        margin-top: 3rem;
+        display: flex;
+        justify-content: center;
+    }
+
+    .page-item.active .page-link {
+        background-color: var(--accent-color);
+        border-color: var(--accent-color);
+    }
+
+    .page-link {
+        color: var(--accent-color);
+    }
+
+    .page-link:hover {
+        color: var(--primary-color);
+    }
+
+    .filter-section {
+        background-color: var(--card-bg);
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin-bottom: 2rem;
+        box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    .filter-title {
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Purchase History Header -->
+<section class="purchase-history-header">
+    <div class="container">
+        <h1 class="purchase-title">Your Purchase History</h1>
+        <p class="purchase-subtitle">Track all your purchases and payments for movies and workshops</p>
+    </div>
+</section>
+
+<!-- Purchase History Content -->
+<section class="purchase-history-content">
+    <div class="container">
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <h4 class="filter-title">Filter Purchases</h4>
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label for="type" class="form-label">Purchase Type</label>
+                    <select class="form-select" id="type" name="type">
+                        <option value="">All Types</option>
+                        <option value="movie" {% if request.GET.type == 'movie' %}selected{% endif %}>Movies</option>
+                        <option value="workshop" {% if request.GET.type == 'workshop' %}selected{% endif %}>Workshops</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="status" class="form-label">Payment Status</label>
+                    <select class="form-select" id="status" name="status">
+                        <option value="">All Statuses</option>
+                        <option value="completed" {% if request.GET.status == 'completed' %}selected{% endif %}>Completed</option>
+                        <option value="pending" {% if request.GET.status == 'pending' %}selected{% endif %}>Pending</option>
+                        <option value="failed" {% if request.GET.status == 'failed' %}selected{% endif %}>Failed</option>
+                        <option value="refunded" {% if request.GET.status == 'refunded' %}selected{% endif %}>Refunded</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="sort" class="form-label">Sort By</label>
+                    <select class="form-select" id="sort" name="sort">
+                        <option value="newest" {% if request.GET.sort == 'newest' or not request.GET.sort %}selected{% endif %}>Newest First</option>
+                        <option value="oldest" {% if request.GET.sort == 'oldest' %}selected{% endif %}>Oldest First</option>
+                        <option value="amount_high" {% if request.GET.sort == 'amount_high' %}selected{% endif %}>Amount (High to Low)</option>
+                        <option value="amount_low" {% if request.GET.sort == 'amount_low' %}selected{% endif %}>Amount (Low to High)</option>
+                    </select>
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary">Apply Filters</button>
+                    <a href="{% url 'accounts:purchase_history' %}" class="btn btn-outline-secondary ms-2">Clear Filters</a>
+                </div>
+            </form>
+        </div>
+
+        {% if purchases %}
+            <!-- Purchase Cards -->
+            {% for purchase in purchases %}
+            <div class="purchase-card">
+                <div class="purchase-header">
+                    <div>
+                        <span class="purchase-type {% if purchase.movie %}movie{% elif purchase.workshop_registration %}workshop{% endif %}">
+                            {% if purchase.movie %}Movie{% elif purchase.workshop_registration %}Workshop{% endif %}
+                        </span>
+                        <span class="purchase-title-text">
+                            {% if purchase.movie %}
+                                {{ purchase.movie.title }}
+                            {% elif purchase.workshop_registration %}
+                                {{ purchase.workshop_registration.workshop.title }}
+                            {% endif %}
+                        </span>
+                    </div>
+                    <span class="badge {% if purchase.payment_status == 'completed' %}bg-success{% elif purchase.payment_status == 'pending' %}bg-warning{% elif purchase.payment_status == 'failed' %}bg-danger{% else %}bg-secondary{% endif %}">
+                        {{ purchase.payment_status|title }}
+                    </span>
+                </div>
+                
+                <div class="purchase-body">
+                    <div class="purchase-info">
+                        <div class="purchase-info-item">
+                            <div class="purchase-info-label">Purchase Date</div>
+                            <div class="purchase-info-value">{{ purchase.purchased_at|date:"F j, Y" }}</div>
+                        </div>
+                        
+                        <div class="purchase-info-item">
+                            <div class="purchase-info-label">Amount</div>
+                            <div class="purchase-info-value">${{ purchase.amount }}</div>
+                        </div>
+                        
+                        <div class="purchase-info-item">
+                            <div class="purchase-info-label">Payment Method</div>
+                            <div class="purchase-info-value">
+                                {% if purchase.payment_method == 'mpesa' %}
+                                    <img src="/static/img/mpesa-logo.png" alt="M-Pesa" style="height: 20px; margin-right: 5px;">
+                                    M-Pesa
+                                {% elif purchase.payment_method == 'stripe' %}
+                                    <img src="/static/img/stripe-logo.png" alt="Stripe" style="height: 20px; margin-right: 5px;">
+                                    Credit Card
+                                {% else %}
+                                    {{ purchase.payment_method|title|default:"Credit Card" }}
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="purchase-info-item">
+                            <div class="purchase-info-label">Payment ID</div>
+                            <div class="purchase-info-value">{{ purchase.payment_id|truncatechars:15 }}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="purchase-actions">
+                        {% if purchase.movie %}
+                            {% if purchase.payment_status == 'completed' %}
+                                <a href="{% url 'payments:watch_movie' purchase.movie.pk %}" class="btn btn-primary">
+                                    <i class="fas fa-play me-2"></i>Watch Movie
+                                </a>
+                            {% else %}
+                                <a href="{% url 'payments:movie_detail' purchase.movie.pk %}" class="btn btn-primary">
+                                    <i class="fas fa-info-circle me-2"></i>View Details
+                                </a>
+                            {% endif %}
+                        {% elif purchase.workshop_registration %}
+                            <a href="{% url 'workshops:detail' purchase.workshop_registration.workshop.pk %}" class="btn btn-primary">
+                                <i class="fas fa-info-circle me-2"></i>View Workshop
+                            </a>
+                        {% endif %}
+                        
+                        {% if purchase.payment_status == 'pending' %}
+                            <a href="#" class="btn btn-outline-primary">
+                                <i class="fas fa-credit-card me-2"></i>Complete Payment
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            
+            <!-- Pagination -->
+            {% if purchases.has_other_pages %}
+            <div class="pagination-container">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        {% if purchases.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ purchases.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link" aria-hidden="true">&laquo;</span>
+                            </li>
+                        {% endif %}
+                        
+                        {% for i in purchases.paginator.page_range %}
+                            {% if purchases.number == i %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ i }}</span>
+                                </li>
+                            {% else %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ i }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{{ i }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if purchases.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ purchases.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link" aria-hidden="true">&raquo;</span>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+            {% endif %}
+            
+        {% else %}
+            <!-- No Purchases -->
+            <div class="no-purchases">
+                <div class="no-purchases-icon">
+                    <i class="far fa-credit-card"></i>
+                </div>
+                <h3>No Purchases Found</h3>
+                <p class="mb-4">You haven't made any purchases yet. Explore our movies and workshops to find something you like!</p>
+                <div>
+                    <a href="{% url 'payments:featured_movies' %}" class="btn btn-primary me-2">
+                        <i class="fas fa-film me-2"></i>Explore Movies
+                    </a>
+                    <a href="{% url 'workshops:list' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-chalkboard-teacher me-2"></i>Browse Workshops
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animation for purchase cards
+        gsap.from('.purchase-card', {
+            opacity: 0,
+            y: 30,
+            stagger: 0.1,
+            duration: 0.8,
+            ease: 'power3.out'
+        });
+    });
+</script>
+{% endblock %}
