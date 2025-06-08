@@ -5,6 +5,7 @@ from django.contrib import admin
 from .models import FeaturedMovie, Purchase, MovieCategory, MovieTrailer, MPesaPayment
 #bvnermgvkl,gwf
 #vhcbnerfjdsstgkerfd
+#febf tvasd
 @admin.register(MovieCategory)
 class MovieCategoryAdmin(admin.ModelAdmin):
     """Admin configuration for movie categories."""
